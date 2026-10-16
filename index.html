@@ -20,7 +20,7 @@
   --r-s:8px;--r-m:12px;--r-l:16px;--tr:.2s ease;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{font-family:'Cairo',Tahoma,sans-serif;background:var(--bg-1);color:var(--text-1);min-height:100vh;overflow-x:hidden;line-height:1.5}
+html,body{font-family:'Cairo',Tahoma,sans-serif;background:var(--bg-1);color:var(--text-1);min-height:100vh;overflow-x:hidden;max-width:100%;line-height:1.5}
 button,input,select,textarea{font-family:inherit}
 a{color:inherit;text-decoration:none}
 
@@ -32,7 +32,7 @@ a{color:inherit;text-decoration:none}
 }
 .sidebar::-webkit-scrollbar{width:6px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.main-content{flex:1;margin-right:260px;padding:24px;min-height:100vh}
+.main-content{flex:1;margin-right:260px;padding:24px;min-height:100vh;min-width:0}
 
 .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:20px}
 .brand{display:flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:700}
@@ -61,8 +61,9 @@ a{color:inherit;text-decoration:none}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;
   padding:16px 20px;background:var(--bg-2);border-radius:var(--r-l);border:1px solid var(--border);
+  gap:10px;flex-wrap:wrap;
 }
-.topbar-title{font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.topbar-title{font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:10px;min-width:0}
 .topbar-title i{color:var(--accent)}
 .topbar-actions{display:flex;gap:12px;align-items:center}
 .mobile-menu-btn{display:none;width:40px;height:40px;border-radius:var(--r-m);background:var(--bg-4);border:1px solid var(--border);color:var(--text-1);font-size:1.1rem;cursor:pointer}
@@ -79,7 +80,6 @@ a{color:inherit;text-decoration:none}
 .btn-success{background:var(--success);color:#fff}
 .btn-danger{background:var(--danger);color:#fff}
 .btn-sm{padding:6px 12px;font-size:.85rem}
-.btn-icon{width:36px;height:36px;padding:0;border-radius:var(--r-m)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 
 .input,.select,.textarea{
@@ -90,12 +90,11 @@ a{color:inherit;text-decoration:none}
 .input::placeholder,.textarea::placeholder{color:var(--text-3)}
 .form-group{margin-bottom:16px}
 .form-label{display:block;font-size:.88rem;font-weight:500;color:var(--text-2);margin-bottom:6px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
 .stat-card{
   background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);
-  padding:20px;transition:var(--tr);position:relative;overflow:hidden;
+  padding:20px;transition:var(--tr);position:relative;overflow:hidden;min-width:0;
 }
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-m);border-color:var(--bg-hover)}
 .stat-card-icon{
@@ -109,19 +108,19 @@ a{color:inherit;text-decoration:none}
 .icon-purple{background:rgba(139,92,246,.15);color:#8b5cf6}
 
 .stat-card-label{font-size:.85rem;color:var(--text-3);margin-bottom:6px;font-weight:500}
-.stat-card-value{font-size:1.7rem;font-weight:800;color:var(--text-1);margin-bottom:6px}
+.stat-card-value{font-size:1.7rem;font-weight:800;color:var(--text-1);margin-bottom:6px;word-break:break-word}
 .stat-card-trend{font-size:.8rem;color:var(--text-3)}
 
-.panel{background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);margin-bottom:20px;overflow:hidden}
+.panel{background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);margin-bottom:20px;overflow:hidden;min-width:0}
 .panel-header{
   padding:16px 20px;border-bottom:1px solid var(--border);display:flex;
   align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
 }
-.panel-title{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.panel-title{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .panel-title i{color:var(--accent)}
 .panel-body{padding:20px}
 
-.table-wrap{overflow-x:auto}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .data-table{width:100%;border-collapse:collapse;min-width:600px}
 .data-table th{
   background:var(--bg-3);padding:12px 16px;text-align:right;font-weight:600;
@@ -207,7 +206,7 @@ a{color:inherit;text-decoration:none}
 .toast{
   background:var(--bg-4);border:1px solid var(--border);color:var(--text-1);
   padding:12px 18px;border-radius:var(--r-m);box-shadow:var(--shadow-m);
-  display:flex;align-items:center;gap:10px;font-size:.92rem;min-width:260px;
+  display:flex;align-items:center;gap:10px;font-size:.92rem;min-width:260px;max-width:calc(100vw - 40px);
   animation:slideIn .3s ease;border-right:4px solid var(--info);pointer-events:auto;
 }
 .toast.success{border-right-color:var(--success)}
@@ -218,7 +217,7 @@ a{color:inherit;text-decoration:none}
 .toast.warning i{color:var(--warning)}
 
 .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
-.detail-item{background:var(--bg-3);padding:12px 14px;border-radius:var(--r-m);border:1px solid var(--border)}
+.detail-item{background:var(--bg-3);padding:12px 14px;border-radius:var(--r-m);border:1px solid var(--border);min-width:0}
 .detail-label{font-size:.78rem;color:var(--text-3);margin-bottom:4px;font-weight:500}
 .detail-value{font-size:1rem;font-weight:600;color:var(--text-1);word-break:break-word}
 
@@ -240,6 +239,7 @@ a{color:inherit;text-decoration:none}
 @keyframes slideIn{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ===== Tablet ===== */
 @media (max-width:900px){
   .sidebar{transform:translateX(100%);box-shadow:var(--shadow-l)}
   .sidebar.open{transform:translateX(0)}
@@ -247,18 +247,40 @@ a{color:inherit;text-decoration:none}
   .mobile-menu-btn{display:grid;place-items:center}
   .topbar-title{font-size:1.15rem}
 }
+
+/* ===== Mobile: الجداول تتحول لكروت ===== */
+@media (max-width:640px){
+  .data-table{min-width:0 !important;width:100%}
+  .data-table thead{display:none}
+  .data-table,.data-table tbody{display:block;width:100%}
+  .data-table tr{
+    display:block;background:var(--bg-3);border:1px solid var(--border);
+    border-radius:12px;margin:0 0 10px;padding:8px 10px;
+  }
+  .data-table tr:last-child{margin-bottom:0}
+  .data-table td{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:7px 4px;border-bottom:1px dashed var(--border);text-align:right;
+  }
+  .data-table td:last-child{border-bottom:none}
+  .data-table td::before{content:attr(data-label);font-weight:600;color:var(--text-3);font-size:.78rem;flex-shrink:0}
+  .data-table td[colspan]{display:block;text-align:center !important;padding:30px 10px !important}
+  .data-table td[colspan]::before{content:none}
+  .data-table td .select{flex:1;min-width:0}
+  .data-table td .pct-wrap{flex:1}
+  .table-wrap{overflow-x:visible}
+}
+
 @media (max-width:600px){
   .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
   .stat-card{padding:14px}
   .stat-card-value{font-size:1.3rem}
-  .form-row{grid-template-columns:1fr}
   .filters .input,.filters .select{width:100%;min-width:0}
   .filters{flex-direction:column;align-items:stretch}
   .search-box{width:100%}
   .panel-header{flex-direction:column;align-items:stretch}
-  .data-table{font-size:.85rem}
-  .data-table th,.data-table td{padding:8px 10px}
   .topbar-actions .btn span{display:none}
+  #lastUpdate{display:none}
 }
 
 ::-webkit-scrollbar{width:8px;height:8px}
@@ -275,7 +297,7 @@ a{color:inherit;text-decoration:none}
 .mt-1{margin-top:8px}.mt-2{margin-top:16px}.mt-3{margin-top:24px}
 .mb-1{margin-bottom:8px}.mb-2{margin-bottom:16px}
 .flex{display:flex}.gap-1{gap:8px}.gap-2{gap:16px}
-.flex-between{display:flex;justify-content:space-between;align-items:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:768px){.grid-2{grid-template-columns:1fr}}
 code.inline{background:var(--bg-3);padding:2px 8px;border-radius:4px;font-size:.85rem;direction:ltr;display:inline-block}
@@ -336,7 +358,7 @@ code.inline{background:var(--bg-3);padding:2px 8px;border-radius:4px;font-size:.
 
   <main class="main-content">
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0">
         <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
         <h1 class="topbar-title" id="pageTitle"><i class="fas fa-chart-line"></i> <span>الرئيسية</span></h1>
       </div>
@@ -411,7 +433,7 @@ const state = {
   autoRefreshTimer: null,
   filters: {
     orders: { search:"", status:"all", dateFrom:"", dateTo:"" },
-    customers: { search:"", type:"all", period:"all", sortBy:"orders" },
+    customers: { search:"", type:"all", sortBy:"orders" },
     products: { search:"" },
     reports: { dateFrom:"", dateTo:"" }
   },
@@ -463,12 +485,7 @@ const Utils = {
     catch { return ""; }
   },
 
-  /* توحيد رقم الهاتف المصري
-     - يشيل مسافات وشرطات وأقواس
-     - يحول +20 / 0020 / 20 لصيغة 01x
-     - يعالج حالة جوجل شيت لما يخزن الرقم كـ رقم ويحذف الصفر الأول
-       (مثلاً 1008136174 -> 01008136174)
-     - أي رقم ناقص أو غير صالح يرجع null ولا يُدمج مع عميل آخر */
+  /* توحيد رقم الهاتف المصري (يعالج حذف الصفر الأول بواسطة جوجل شيت) */
   normalizePhone(phone){
     if (phone === null || phone === undefined) return null;
     let p = String(phone).replace(/[\s\-().]/g,"");
@@ -477,7 +494,7 @@ const Utils = {
     else if (p.startsWith("0020")) p = "0" + p.substring(4);
     else if (p.startsWith("200") && p.length === 13) p = "0" + p.substring(3);
     else if (p.startsWith("20") && p.length === 12) p = "0" + p.substring(2);
-    else if (p.length === 10 && p.charAt(0) === "1") p = "0" + p; // شيت حذف الصفر الأول
+    else if (p.length === 10 && p.charAt(0) === "1") p = "0" + p;
     if (/^01[0-9]{9}$/.test(p)) return p;
     return null;
   },
@@ -535,7 +552,6 @@ const Utils = {
     return `<span class="badge ${info.cls}"><i class="fas fa-${info.icon}"></i> ${this.escapeHtml(info.label)}</span>`;
   },
 
-  /* تحليل نص المنتجات في الشيت: "اسم المنتج × الكمية = الإجمالي جنيه" */
   parseProducts(text){
     if (!text) return [];
     const lines = String(text).split("\n").map(l=>l.trim()).filter(Boolean);
@@ -594,9 +610,7 @@ const API = {
 };
 
 /* ==========================================================================
-   Analytics
-   سياسة المبيعات: المبيعات المحققة = كل الطلبات غير الملغاة.
-   الطلبات الملغاة تبقى في السجل ولا تُحسب في المبيعات.
+   Analytics — سياسة المبيعات: المحقق = كل الطلبات غير الملغاة
    ========================================================================== */
 const Analytics = {
   orderStats(){
@@ -604,9 +618,9 @@ const Analytics = {
     const byStatus = {"طلب جديد":0,"قيد التحضير":0,"جاهز":0,"تم التسليم":0,"ملغي":0};
     let todaySales=0, weekSales=0, monthSales=0;
     let todayOrders=0, weekOrders=0, monthOrders=0;
-    let totalValueAll = 0;   // قيمة كل الطلبات بما فيها الملغاة
-    let realizedSales = 0;   // قيمة الطلبات غير الملغاة
-    let realizedCount = 0;   // عدد الطلبات غير الملغاة
+    let totalValueAll = 0;
+    let realizedSales = 0;
+    let realizedCount = 0;
     const productCount = new Map();
 
     for (const o of orders){
@@ -646,14 +660,11 @@ const Analytics = {
   },
 
   buildCustomers(){
-    const map = new Map(); // الرقم الموحد -> العميل
+    const map = new Map();
 
     for (const o of state.orders){
       const norm = Utils.normalizePhone(o.phone);
-      if (!norm){
-        // رقم ناقص أو غير صالح: لا يُدمج مع أي عميل آخر
-        continue;
-      }
+      if (!norm) continue;
       if (!map.has(norm)){
         map.set(norm, {
           phoneNorm: norm,
@@ -675,7 +686,6 @@ const Analytics = {
       c.activeOrders = c.orders.filter(o=>o.status!=="ملغي").length;
 
       c.totalOrderValue = c.orders.reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
-      // المبيعات المحققة = كل الطلبات غير الملغاة
       c.realizedSales = c.orders.filter(o=>o.status!=="ملغي").reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
       c.avgCompleted = c.activeOrders>0 ? c.realizedSales/c.activeOrders : 0;
 
@@ -775,10 +785,6 @@ const UI = {
         b.addEventListener("click",()=>resolve(false),{once:true});
       });
     });
-  },
-
-  showLoader(container){
-    container.innerHTML = `<div class="page-loader"><div class="loader"></div><div class="text-muted">جاري التحميل...</div></div>`;
   },
 
   updateLastUpdate(){
@@ -907,10 +913,10 @@ const Views = {
                 ${recent.length===0 ? `<tr><td colspan="4" class="text-center text-muted" style="padding:40px">لا توجد طلبات بعد</td></tr>` :
                   recent.map(o=>`
                     <tr class="clickable" onclick="openOrderModal(${o.rowIndex})">
-                      <td><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></td>
-                      <td>${Utils.escapeHtml(o.fullName||"-")}</td>
-                      <td>${Utils.formatMoney(o.finalTotal)}</td>
-                      <td>${Utils.statusBadge(o.status)}</td>
+                      <td data-label="رقم الطلب"><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></td>
+                      <td data-label="العميل">${Utils.escapeHtml(o.fullName||"-")}</td>
+                      <td data-label="الإجمالي">${Utils.formatMoney(o.finalTotal)}</td>
+                      <td data-label="الحالة">${Utils.statusBadge(o.status)}</td>
                     </tr>
                   `).join("")}
               </tbody>
@@ -929,9 +935,9 @@ const Views = {
                 ${topProducts.length===0 ? `<tr><td colspan="3" class="text-center text-muted" style="padding:40px">لا توجد بيانات</td></tr>` :
                   topProducts.map(([n,d])=>`
                     <tr>
-                      <td>${Utils.escapeHtml(n)}</td>
-                      <td><strong>${d.qty}</strong></td>
-                      <td>${Utils.formatMoney(d.total)}</td>
+                      <td data-label="المنتج">${Utils.escapeHtml(n)}</td>
+                      <td data-label="الكمية"><strong>${d.qty}</strong></td>
+                      <td data-label="القيمة">${Utils.formatMoney(d.total)}</td>
                     </tr>
                   `).join("")}
               </tbody>
@@ -1023,23 +1029,9 @@ const Views = {
     }, 50);
   },
 
-  /* ----- Orders ----- */
+  /* ----- Orders (هيكل ثابت + تحديث الجدول فقط => البحث يشتغل بحرية) ----- */
   renderOrders(){
     const f = state.filters.orders;
-    const filtered = state.orders.filter(o => {
-      if (f.status !== "all" && o.status !== f.status) return false;
-      if (f.search){
-        const q = f.search.toLowerCase();
-        const normPhone = Utils.normalizePhone(o.phone) || "";
-        if (!(o.orderNumber||"").toLowerCase().includes(q) &&
-            !(o.fullName||"").toLowerCase().includes(q) &&
-            !(o.phone||"").includes(q) &&
-            !normPhone.includes(q)) return false;
-      }
-      if (!Utils.isInDateRange(o.orderTime, f.dateFrom, f.dateTo)) return false;
-      return true;
-    });
-
     return `
       <div class="panel">
         <div class="panel-header">
@@ -1064,44 +1056,65 @@ const Views = {
 
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title"><i class="fas fa-clipboard-list"></i> قائمة الطلبات <span class="badge badge-info">${filtered.length}</span></div>
+          <div class="panel-title"><i class="fas fa-clipboard-list"></i> قائمة الطلبات <span class="badge badge-info" id="ordersCount">0</span></div>
         </div>
-        <div class="table-wrap">
-          <table class="data-table" id="ordersTable">
-            <thead>
-              <tr>
-                <th>رقم الطلب</th>
-                <th>التاريخ</th>
-                <th>العميل</th>
-                <th>الهاتف</th>
-                <th>الإجمالي</th>
-                <th>الدفع</th>
-                <th>الحالة</th>
-                <th>إجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filtered.length===0 ? `<tr><td colspan="8" class="text-center text-muted" style="padding:40px">لا توجد طلبات مطابقة</td></tr>` :
-                filtered.map(o=>`
-                  <tr>
-                    <td><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></td>
-                    <td>${Utils.formatDate(o.orderTime)}</td>
-                    <td>${Utils.escapeHtml(o.fullName||"-")}</td>
-                    <td style="direction:ltr;text-align:right">${Utils.escapeHtml(Utils.normalizePhone(o.phone) || o.phone || "-")}</td>
-                    <td>${Utils.formatMoney(o.finalTotal)}</td>
-                    <td>${Utils.escapeHtml(o.paymentMethod||"-")}</td>
-                    <td>
-                      <select class="select" style="min-width:130px" onchange="updateOrderStatus(${o.rowIndex}, this.value, this)">
-                        ${CONFIG.STATUSES.map(s=>`<option value="${s}" ${o.status===s?"selected":""}>${s}</option>`).join("")}
-                      </select>
-                    </td>
-                    <td><button class="btn btn-secondary btn-sm" onclick="openOrderModal(${o.rowIndex})"><i class="fas fa-eye"></i></button></td>
-                  </tr>
-                `).join("")}
-            </tbody>
-          </table>
-        </div>
+        <div class="table-wrap" id="ordersTableWrap"></div>
       </div>
+    `;
+  },
+
+  filteredOrders(){
+    const f = state.filters.orders;
+    return state.orders.filter(o => {
+      if (f.status !== "all" && o.status !== f.status) return false;
+      if (f.search){
+        const q = f.search.toLowerCase();
+        const normPhone = Utils.normalizePhone(o.phone) || "";
+        if (!(o.orderNumber||"").toLowerCase().includes(q) &&
+            !(o.fullName||"").toLowerCase().includes(q) &&
+            !(o.phone||"").includes(q) &&
+            !normPhone.includes(q)) return false;
+      }
+      if (!Utils.isInDateRange(o.orderTime, f.dateFrom, f.dateTo)) return false;
+      return true;
+    });
+  },
+
+  updateOrdersTable(){
+    const wrap = document.getElementById("ordersTableWrap");
+    const countEl = document.getElementById("ordersCount");
+    if (!wrap) return;
+    const filtered = this.filteredOrders();
+    if (countEl) countEl.textContent = filtered.length;
+
+    wrap.innerHTML = `
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th>
+            <th>الإجمالي</th><th>الدفع</th><th>الحالة</th><th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.length===0 ? `<tr><td colspan="8" class="text-center text-muted" style="padding:40px">لا توجد طلبات مطابقة</td></tr>` :
+            filtered.map(o=>`
+              <tr>
+                <td data-label="رقم الطلب"><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></td>
+                <td data-label="التاريخ">${Utils.formatDate(o.orderTime)}</td>
+                <td data-label="العميل">${Utils.escapeHtml(o.fullName||"-")}</td>
+                <td data-label="الهاتف"><span dir="ltr" style="display:inline-block">${Utils.escapeHtml(Utils.normalizePhone(o.phone) || o.phone || "-")}</span></td>
+                <td data-label="الإجمالي">${Utils.formatMoney(o.finalTotal)}</td>
+                <td data-label="الدفع">${Utils.escapeHtml(o.paymentMethod||"-")}</td>
+                <td data-label="الحالة">
+                  <select class="select" style="min-width:130px" onchange="updateOrderStatus(${o.rowIndex}, this.value, this)">
+                    ${CONFIG.STATUSES.map(s=>`<option value="${s}" ${o.status===s?"selected":""}>${s}</option>`).join("")}
+                  </select>
+                </td>
+                <td data-label="إجراءات"><button class="btn btn-secondary btn-sm" onclick="openOrderModal(${o.rowIndex})"><i class="fas fa-eye"></i></button></td>
+              </tr>
+            `).join("")}
+        </tbody>
+      </table>
     `;
   },
 
@@ -1110,11 +1123,12 @@ const Views = {
     const st = document.getElementById("ordersStatus");
     const df = document.getElementById("ordersDateFrom");
     const dt = document.getElementById("ordersDateTo");
-    const render = () => { navigate("orders", true); };
-    if (s) s.addEventListener("input", e=>{state.filters.orders.search=e.target.value; render();});
-    if (st) st.addEventListener("change", e=>{state.filters.orders.status=e.target.value; render();});
-    if (df) df.addEventListener("change", e=>{state.filters.orders.dateFrom=e.target.value; render();});
-    if (dt) dt.addEventListener("change", e=>{state.filters.orders.dateTo=e.target.value; render();});
+    const upd = () => Views.updateOrdersTable();
+    if (s) s.addEventListener("input", e=>{state.filters.orders.search=e.target.value; upd();});
+    if (st) st.addEventListener("change", e=>{state.filters.orders.status=e.target.value; upd();});
+    if (df) df.addEventListener("change", e=>{state.filters.orders.dateFrom=e.target.value; upd();});
+    if (dt) dt.addEventListener("change", e=>{state.filters.orders.dateTo=e.target.value; upd();});
+    Views.updateOrdersTable();
   },
 
   clearOrdersFilter(){
@@ -1122,37 +1136,15 @@ const Views = {
     navigate("orders");
   },
 
-  /* ----- Customers ----- */
+  /* ----- Customers (هيكل ثابت + تحديث ديناميكي) ----- */
   renderCustomers(){
-    const f = state.filters.customers;
-    const map = Analytics.buildCustomers();
-    let customers = Array.from(map.values());
-
-    if (f.type === "new") customers = customers.filter(c=>!c.isRepeat);
-    else if (f.type === "repeat") customers = customers.filter(c=>c.isRepeat);
-
-    if (f.search){
-      const q = f.search.toLowerCase();
-      customers = customers.filter(c =>
-        (c.name||"").toLowerCase().includes(q) ||
-        (c.phoneNorm||"").includes(q) ||
-        (c.phoneOrig||"").includes(q)
-      );
-    }
-
-    if (f.sortBy === "orders") customers.sort((a,b)=>b.totalOrders-a.totalOrders || b.realizedSales-a.realizedSales);
-    else if (f.sortBy === "sales") customers.sort((a,b)=>b.realizedSales-a.realizedSales || b.totalOrders-a.totalOrders);
-    else if (f.sortBy === "recent") customers.sort((a,b)=>new Date(b.lastOrder.orderTime)-new Date(a.lastOrder.orderTime));
-    else if (f.sortBy === "avg") customers.sort((a,b)=>b.avgCompleted-a.avgCompleted);
-
+    const map = state.customers;
     const invalidCount = state.orders.filter(o=>!Utils.normalizePhone(o.phone)).length;
     const newCount = Array.from(map.values()).filter(c=>!c.isRepeat).length;
     const repeatCount = Array.from(map.values()).filter(c=>c.isRepeat).length;
     const totalCustomers = map.size;
     const repeatRatio = totalCustomers>0 ? Math.round(repeatCount/totalCustomers*100) : 0;
-
-    const topByOrders = Array.from(map.values()).sort((a,b)=>b.totalOrders-a.totalOrders || b.realizedSales-a.realizedSales).slice(0,10);
-    const topBySales = Array.from(map.values()).sort((a,b)=>b.realizedSales-a.realizedSales || b.totalOrders-a.totalOrders).slice(0,10);
+    const f = state.filters.customers;
 
     return `
       <div class="stats-grid">
@@ -1213,6 +1205,38 @@ const Views = {
         </div>
       </div>
 
+      <div id="customersDynamic"></div>
+    `;
+  },
+
+  updateCustomers(){
+    const wrap = document.getElementById("customersDynamic");
+    if (!wrap) return;
+    const f = state.filters.customers;
+    const map = state.customers;
+    let customers = Array.from(map.values());
+
+    if (f.type === "new") customers = customers.filter(c=>!c.isRepeat);
+    else if (f.type === "repeat") customers = customers.filter(c=>c.isRepeat);
+
+    if (f.search){
+      const q = f.search.toLowerCase();
+      customers = customers.filter(c =>
+        (c.name||"").toLowerCase().includes(q) ||
+        (c.phoneNorm||"").includes(q) ||
+        (c.phoneOrig||"").includes(q)
+      );
+    }
+
+    if (f.sortBy === "orders") customers.sort((a,b)=>b.totalOrders-a.totalOrders || b.realizedSales-a.realizedSales);
+    else if (f.sortBy === "sales") customers.sort((a,b)=>b.realizedSales-a.realizedSales || b.totalOrders-a.totalOrders);
+    else if (f.sortBy === "recent") customers.sort((a,b)=>new Date(b.lastOrder.orderTime)-new Date(a.lastOrder.orderTime));
+    else if (f.sortBy === "avg") customers.sort((a,b)=>b.avgCompleted-a.avgCompleted);
+
+    const topByOrders = Array.from(map.values()).sort((a,b)=>b.totalOrders-a.totalOrders || b.realizedSales-a.realizedSales).slice(0,10);
+    const topBySales = Array.from(map.values()).sort((a,b)=>b.realizedSales-a.realizedSales || b.totalOrders-a.totalOrders).slice(0,10);
+
+    wrap.innerHTML = `
       <div class="grid-2">
         <div class="panel">
           <div class="panel-header">
@@ -1225,11 +1249,11 @@ const Views = {
                 ${topByOrders.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
                   topByOrders.map((c,i)=>`
                     <tr class="clickable" onclick="openCustomerModal('${c.phoneNorm}')">
-                      <td><strong>${i+1}</strong></td>
-                      <td>${Utils.escapeHtml(c.name)}</td>
-                      <td style="direction:ltr;text-align:right">${Utils.escapeHtml(c.phoneNorm)}</td>
-                      <td><strong>${c.totalOrders}</strong></td>
-                      <td>${Utils.formatMoney(c.realizedSales)}</td>
+                      <td data-label="#"><strong>${i+1}</strong></td>
+                      <td data-label="العميل">${Utils.escapeHtml(c.name)}</td>
+                      <td data-label="الهاتف"><span dir="ltr" style="display:inline-block">${Utils.escapeHtml(c.phoneNorm)}</span></td>
+                      <td data-label="عدد الطلبات"><strong>${c.totalOrders}</strong></td>
+                      <td data-label="المبيعات">${Utils.formatMoney(c.realizedSales)}</td>
                     </tr>
                   `).join("")}
               </tbody>
@@ -1248,11 +1272,11 @@ const Views = {
                 ${topBySales.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
                   topBySales.map((c,i)=>`
                     <tr class="clickable" onclick="openCustomerModal('${c.phoneNorm}')">
-                      <td><strong>${i+1}</strong></td>
-                      <td>${Utils.escapeHtml(c.name)}</td>
-                      <td style="direction:ltr;text-align:right">${Utils.escapeHtml(c.phoneNorm)}</td>
-                      <td><strong>${Utils.formatMoney(c.realizedSales)}</strong></td>
-                      <td>${c.totalOrders}</td>
+                      <td data-label="#"><strong>${i+1}</strong></td>
+                      <td data-label="العميل">${Utils.escapeHtml(c.name)}</td>
+                      <td data-label="الهاتف"><span dir="ltr" style="display:inline-block">${Utils.escapeHtml(c.phoneNorm)}</span></td>
+                      <td data-label="المبيعات المحققة"><strong>${Utils.formatMoney(c.realizedSales)}</strong></td>
+                      <td data-label="عدد الطلبات">${c.totalOrders}</td>
                     </tr>
                   `).join("")}
               </tbody>
@@ -1269,32 +1293,24 @@ const Views = {
           <table class="data-table">
             <thead>
               <tr>
-                <th>الاسم</th>
-                <th>الهاتف</th>
-                <th>الطلبات</th>
-                <th>المكتملة</th>
-                <th>الملغاة</th>
-                <th>المبيعات</th>
-                <th>المتوسط</th>
-                <th>أول طلب</th>
-                <th>آخر طلب</th>
-                <th>منذ</th>
+                <th>الاسم</th><th>الهاتف</th><th>الطلبات</th><th>المكتملة</th><th>الملغاة</th>
+                <th>المبيعات</th><th>المتوسط</th><th>أول طلب</th><th>آخر طلب</th><th>منذ</th>
               </tr>
             </thead>
             <tbody>
               ${customers.length===0 ? `<tr><td colspan="10" class="text-center text-muted" style="padding:40px">لا يوجد عملاء مطابقون</td></tr>` :
                 customers.map(c=>`
                   <tr class="clickable" onclick="openCustomerModal('${c.phoneNorm}')">
-                    <td>${Utils.escapeHtml(c.name)} ${c.isRepeat?'<span class="badge badge-success" style="margin-right:4px">متكرر</span>':'<span class="badge badge-info" style="margin-right:4px">جديد</span>'}</td>
-                    <td style="direction:ltr;text-align:right">${Utils.escapeHtml(c.phoneNorm)}</td>
-                    <td>${c.totalOrders}</td>
-                    <td class="text-success">${c.deliveredOrders}</td>
-                    <td class="text-danger">${c.cancelledOrders}</td>
-                    <td>${Utils.formatMoney(c.realizedSales)}</td>
-                    <td>${Utils.formatMoney(c.avgCompleted)}</td>
-                    <td>${Utils.formatDateOnly(c.firstOrder.orderTime)}</td>
-                    <td>${Utils.formatDateOnly(c.lastOrder.orderTime)}</td>
-                    <td>${c.daysSinceLastOrder} يوم</td>
+                    <td data-label="الاسم">${Utils.escapeHtml(c.name)} ${c.isRepeat?'<span class="badge badge-success" style="margin-right:4px">متكرر</span>':'<span class="badge badge-info" style="margin-right:4px">جديد</span>'}</td>
+                    <td data-label="الهاتف"><span dir="ltr" style="display:inline-block">${Utils.escapeHtml(c.phoneNorm)}</span></td>
+                    <td data-label="الطلبات">${c.totalOrders}</td>
+                    <td data-label="المكتملة" class="text-success">${c.deliveredOrders}</td>
+                    <td data-label="الملغاة" class="text-danger">${c.cancelledOrders}</td>
+                    <td data-label="المبيعات">${Utils.formatMoney(c.realizedSales)}</td>
+                    <td data-label="المتوسط">${Utils.formatMoney(c.avgCompleted)}</td>
+                    <td data-label="أول طلب">${Utils.formatDateOnly(c.firstOrder.orderTime)}</td>
+                    <td data-label="آخر طلب">${Utils.formatDateOnly(c.lastOrder.orderTime)}</td>
+                    <td data-label="منذ">${c.daysSinceLastOrder} يوم</td>
                   </tr>
                 `).join("")}
             </tbody>
@@ -1310,10 +1326,11 @@ const Views = {
       if (!el) return;
       el.addEventListener(el.tagName==="INPUT"?"input":"change", e=>{
         state.filters.customers[key] = e.target.value;
-        navigate("customers", true);
+        Views.updateCustomers();
       });
     };
     bind("custSearch","search"); bind("custType","type"); bind("custSort","sortBy");
+    Views.updateCustomers();
   },
 
   exportCustomers(){
@@ -1333,17 +1350,10 @@ const Views = {
 
   /* ----- Products ----- */
   renderProducts(){
-    const s = Analytics.orderStats();
-    const search = state.filters.products.search.toLowerCase();
-    const products = Array.from(s.productCount.entries())
-      .map(([name, data])=>({name, ...data}))
-      .filter(p => !search || p.name.toLowerCase().includes(search))
-      .sort((a,b)=>b.qty-a.qty);
-
     return `
       <div class="panel">
         <div class="panel-body">
-          <div class="flex-between" style="flex-wrap:wrap;gap:12px">
+          <div class="flex-between">
             <div>
               <h3 style="margin-bottom:4px"><i class="fas fa-utensils text-accent"></i> المنتجات</h3>
               <p class="text-muted" style="font-size:.85rem">
@@ -1359,43 +1369,50 @@ const Views = {
       </div>
 
       <div class="panel">
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم المنتج</th>
-                <th>الكمية المباعة</th>
-                <th>إجمالي القيمة</th>
-                <th>النسبة</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${products.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:40px">لا توجد منتجات مباعة بعد</td></tr>` :
-                products.map((p,i)=>{
-                  const totalQty = products.reduce((s,x)=>s+x.qty,0) || 1;
-                  const pct = (p.qty/totalQty*100).toFixed(1);
-                  return `
-                    <tr>
-                      <td>${i+1}</td>
-                      <td><strong>${Utils.escapeHtml(p.name)}</strong></td>
-                      <td>${p.qty}</td>
-                      <td>${Utils.formatMoney(p.total)}</td>
-                      <td>
-                        <div style="display:flex;align-items:center;gap:8px">
-                          <div style="flex:1;height:6px;background:var(--bg-3);border-radius:3px;overflow:hidden">
-                            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--secondary))"></div>
-                          </div>
-                          <span class="text-muted" style="font-size:.82rem;min-width:40px">${pct}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  `;
-                }).join("")}
-            </tbody>
-          </table>
-        </div>
+        <div class="table-wrap" id="productsTableWrap"></div>
       </div>
+    `;
+  },
+
+  updateProductsTable(){
+    const wrap = document.getElementById("productsTableWrap");
+    if (!wrap) return;
+    const s = Analytics.orderStats();
+    const search = state.filters.products.search.toLowerCase();
+    const products = Array.from(s.productCount.entries())
+      .map(([name, data])=>({name, ...data}))
+      .filter(p => !search || p.name.toLowerCase().includes(search))
+      .sort((a,b)=>b.qty-a.qty);
+
+    wrap.innerHTML = `
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>اسم المنتج</th><th>الكمية المباعة</th><th>إجمالي القيمة</th><th>النسبة</th></tr>
+        </thead>
+        <tbody>
+          ${products.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:40px">لا توجد منتجات مطابقة</td></tr>` :
+            products.map((p,i)=>{
+              const totalQty = products.reduce((s2,x)=>s2+x.qty,0) || 1;
+              const pct = (p.qty/totalQty*100).toFixed(1);
+              return `
+                <tr>
+                  <td data-label="#">${i+1}</td>
+                  <td data-label="اسم المنتج"><strong>${Utils.escapeHtml(p.name)}</strong></td>
+                  <td data-label="الكمية المباعة">${p.qty}</td>
+                  <td data-label="إجمالي القيمة">${Utils.formatMoney(p.total)}</td>
+                  <td data-label="النسبة">
+                    <div class="pct-wrap" style="display:flex;align-items:center;gap:8px">
+                      <div style="flex:1;height:6px;background:var(--bg-3);border-radius:3px;overflow:hidden;min-width:60px">
+                        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--secondary))"></div>
+                      </div>
+                      <span class="text-muted" style="font-size:.82rem;min-width:40px">${pct}%</span>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+        </tbody>
+      </table>
     `;
   },
 
@@ -1403,8 +1420,9 @@ const Views = {
     const el = document.getElementById("prodSearch");
     if (el) el.addEventListener("input", e=>{
       state.filters.products.search = e.target.value;
-      navigate("products", true);
+      Views.updateProductsTable();
     });
+    Views.updateProductsTable();
   },
 
   /* ----- Reports ----- */
@@ -1417,7 +1435,6 @@ const Views = {
     const delivered = filtered.filter(o=>o.status==="تم التسليم").length;
     const activeOrders = filtered.filter(o=>o.status!=="ملغي");
     const realized = activeOrders.reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
-    const totalValue = filtered.reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
     const avgOrder = activeOrders.length>0 ? realized/activeOrders.length : 0;
 
     const prodMap = new Map();
@@ -1460,13 +1477,13 @@ const Views = {
           <div class="filters">
             <div>
               <label class="form-label" style="font-size:.78rem">من تاريخ</label>
-              <input type="date" class="input" id="repDateFrom" value="${f.dateFrom}" style="width:180px">
+              <input type="date" class="input" id="repDateFrom" value="${f.dateFrom}" style="width:180px;max-width:100%">
             </div>
             <div>
               <label class="form-label" style="font-size:.78rem">إلى تاريخ</label>
-              <input type="date" class="input" id="repDateTo" value="${f.dateTo}" style="width:180px">
+              <input type="date" class="input" id="repDateTo" value="${f.dateTo}" style="width:180px;max-width:100%">
             </div>
-            <div style="align-self:flex-end">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-self:flex-end">
               <button class="btn btn-secondary btn-sm" onclick="Views.quickPeriod(7)">آخر 7 أيام</button>
               <button class="btn btn-secondary btn-sm" onclick="Views.quickPeriod(30)">آخر 30 يوم</button>
               <button class="btn btn-secondary btn-sm" onclick="Views.quickPeriod(0)">الكل</button>
@@ -1511,7 +1528,12 @@ const Views = {
               <tbody>
                 ${topProducts.length===0 ? `<tr><td colspan="4" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
                   topProducts.map(([name,d],i)=>`
-                    <tr><td>${i+1}</td><td>${Utils.escapeHtml(name)}</td><td>${d.qty}</td><td>${Utils.formatMoney(d.total)}</td></tr>
+                    <tr>
+                      <td data-label="#">${i+1}</td>
+                      <td data-label="المنتج">${Utils.escapeHtml(name)}</td>
+                      <td data-label="الكمية">${d.qty}</td>
+                      <td data-label="القيمة">${Utils.formatMoney(d.total)}</td>
+                    </tr>
                   `).join("")}
               </tbody>
             </table>
@@ -1529,10 +1551,10 @@ const Views = {
                 ${topCustomers.length===0 ? `<tr><td colspan="4" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
                   topCustomers.map(([phone,d],i)=>`
                     <tr class="clickable" onclick="openCustomerModal('${phone}')">
-                      <td>${i+1}</td>
-                      <td>${Utils.escapeHtml(d.name)}<br><small class="text-muted" style="direction:ltr;display:inline-block">${Utils.escapeHtml(phone)}</small></td>
-                      <td>${d.orders}</td>
-                      <td>${Utils.formatMoney(d.sales)}</td>
+                      <td data-label="#">${i+1}</td>
+                      <td data-label="العميل">${Utils.escapeHtml(d.name)}<br><small class="text-muted"><span dir="ltr" style="display:inline-block">${Utils.escapeHtml(phone)}</span></small></td>
+                      <td data-label="الطلبات">${d.orders}</td>
+                      <td data-label="المبيعات">${Utils.formatMoney(d.sales)}</td>
                     </tr>
                   `).join("")}
               </tbody>
@@ -1646,7 +1668,7 @@ const Views = {
         </div>
         <div class="panel-body">
           <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label">إصدار الـ Dashboard</div><div class="detail-value">1.1.0</div></div>
+            <div class="detail-item"><div class="detail-label">إصدار الـ Dashboard</div><div class="detail-value">1.2.0</div></div>
             <div class="detail-item"><div class="detail-label">مصدر البيانات</div><div class="detail-value">Google Sheets (الطلبات)</div></div>
             <div class="detail-item"><div class="detail-label">حالة الاتصال</div><div class="detail-value text-success">${state.lastFetch?'متصل':'غير متصل'}</div></div>
             <div class="detail-item"><div class="detail-label">إجمالي الطلبات المحملة</div><div class="detail-value">${state.orders.length}</div></div>
@@ -1689,13 +1711,15 @@ function openOrderModal(rowIndex){
     </div>
 
     <h4 class="section-title"><i class="fas fa-utensils"></i> المنتجات</h4>
-    <table class="data-table">
-      <thead><tr><th>المنتج</th><th>الكمية</th><th>الإجمالي</th></tr></thead>
-      <tbody>
-        ${products.length===0 ? `<tr><td colspan="3" class="text-center text-muted">لا توجد منتجات</td></tr>` :
-          products.map(p=>`<tr><td>${Utils.escapeHtml(p.name)}</td><td>${p.qty}</td><td>${Utils.formatMoney(p.total)}</td></tr>`).join("")}
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>المنتج</th><th>الكمية</th><th>الإجمالي</th></tr></thead>
+        <tbody>
+          ${products.length===0 ? `<tr><td colspan="3" class="text-center text-muted">لا توجد منتجات</td></tr>` :
+            products.map(p=>`<tr><td data-label="المنتج">${Utils.escapeHtml(p.name)}</td><td data-label="الكمية">${p.qty}</td><td data-label="الإجمالي">${Utils.formatMoney(p.total)}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
 
     <h4 class="section-title"><i class="fas fa-coins"></i> ملخص الأسعار</h4>
     <div class="detail-grid">
@@ -1735,6 +1759,9 @@ async function updateOrderStatus(rowIndex, newStatus, selectEl){
     Analytics.buildCustomers();
     UI.toast("تم تحديث الحالة بنجاح", "success");
     if (state.currentView === "dashboard") navigate("dashboard");
+    else if (state.currentView === "orders") Views.updateOrdersTable();
+    else if (state.currentView === "customers") Views.updateCustomers();
+    else if (state.currentView === "reports") navigate("reports", true);
   } catch (err) {
     UI.toast("فشل التحديث: " + err.message, "error");
     if (selectEl) selectEl.value = o.status;
@@ -1784,12 +1811,14 @@ function openCustomerModal(phone){
 
     ${c.favoriteProducts.length>0 ? `
       <h4 class="section-title"><i class="fas fa-star"></i> المنتجات المفضلة</h4>
-      <table class="data-table">
-        <thead><tr><th>المنتج</th><th>الكمية</th><th>القيمة</th></tr></thead>
-        <tbody>
-          ${c.favoriteProducts.map(p=>`<tr><td>${Utils.escapeHtml(p.name)}</td><td>${p.qty}</td><td>${Utils.formatMoney(p.total)}</td></tr>`).join("")}
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>المنتج</th><th>الكمية</th><th>القيمة</th></tr></thead>
+          <tbody>
+            ${c.favoriteProducts.map(p=>`<tr><td data-label="المنتج">${Utils.escapeHtml(p.name)}</td><td data-label="الكمية">${p.qty}</td><td data-label="القيمة">${Utils.formatMoney(p.total)}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
     ` : ""}
 
     ${c.addresses.length>0 ? `
@@ -1809,7 +1838,7 @@ function openCustomerModal(phone){
       ${c.orders.map(o=>`
         <div class="timeline-item ${o.status==='تم التسليم'?'success':o.status==='ملغي'?'muted':''}">
           <div class="timeline-date">${Utils.formatDate(o.orderTime)} — <code class="inline">${Utils.escapeHtml(o.orderNumber||'')}</code></div>
-          <div class="flex-between gap-1">
+          <div class="flex-between">
             <div>
               <div>${Utils.statusBadge(o.status)} <strong>${Utils.formatMoney(o.finalTotal)}</strong></div>
               <div class="text-muted" style="font-size:.82rem;margin-top:4px">${Utils.escapeHtml((o.productsText||"").split("\n")[0])}</div>
@@ -1945,10 +1974,13 @@ function clearCache(){
 function startAutoRefresh(){
   stopAutoRefresh();
   state.autoRefreshTimer = setInterval(async ()=>{
-    if (state.currentView !== "settings"){
-      await loadOrders(true);
-      navigate(state.currentView, true);
-    }
+    if (state.currentView === "settings") return;
+    await loadOrders(true);
+    // تحديث جزئي بدون إعادة رسم الصفحة (عشان ما يفقدش الفوكس من البحث)
+    if (state.currentView === "orders") Views.updateOrdersTable();
+    else if (state.currentView === "customers") Views.updateCustomers();
+    else if (state.currentView === "products") Views.updateProductsTable();
+    else navigate(state.currentView, true);
   }, CONFIG.AUTO_REFRESH_MS);
 }
 function stopAutoRefresh(){
@@ -1964,7 +1996,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("refreshBtn").addEventListener("click", async ()=>{
     UI.toast("جاري التحديث...","info");
     await loadOrders(false);
-    navigate(state.currentView);
+    if (state.currentView === "orders") Views.updateOrdersTable();
+    else if (state.currentView === "customers") Views.updateCustomers();
+    else if (state.currentView === "products") Views.updateProductsTable();
+    else navigate(state.currentView);
     UI.toast("تم التحديث","success");
   });
   document.getElementById("mobileMenuBtn").addEventListener("click", ()=>{
