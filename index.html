@@ -216,6 +216,38 @@ a{color:inherit;text-decoration:none}
 .toast.warning{border-right-color:var(--warning)}
 .toast.warning i{color:var(--warning)}
 
+.new-order-alert{
+  position:fixed;top:14px;left:50%;transform:translate(-50%,-180%);
+  z-index:3000;width:min(480px,calc(100vw - 24px));
+  background:linear-gradient(135deg,var(--accent),#b81e1a);
+  color:#fff;border-radius:14px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  box-shadow:0 12px 32px rgba(217,45,39,.45);
+  transition:transform .45s cubic-bezier(.2,.9,.3,1.15);
+}
+.new-order-alert.show{transform:translate(-50%,0);animation:noaPulse 2s ease-in-out infinite}
+@keyframes noaPulse{
+  0%,100%{box-shadow:0 12px 32px rgba(217,45,39,.45)}
+  50%{box-shadow:0 12px 44px rgba(217,45,39,.8)}
+}
+.noa-icon{
+  width:42px;height:42px;background:rgba(255,255,255,.18);border-radius:50%;
+  display:grid;place-items:center;font-size:1.15rem;flex-shrink:0;
+}
+.noa-icon i{animation:ring 1.4s ease-in-out infinite;transform-origin:top center}
+@keyframes ring{
+  0%,100%{transform:rotate(0)}
+  15%{transform:rotate(14deg)}30%{transform:rotate(-12deg)}
+  45%{transform:rotate(8deg)}60%{transform:rotate(-6deg)}75%{transform:rotate(0)}
+}
+.noa-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.noa-text strong{font-size:.98rem}
+.noa-text small{font-size:.8rem;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.noa-count{
+  background:#fff;color:var(--accent);font-weight:800;min-width:26px;height:26px;
+  border-radius:50%;display:grid;place-items:center;font-size:.85rem;flex-shrink:0;padding:0 6px;
+}
+
 .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
 .detail-item{background:var(--bg-3);padding:12px 14px;border-radius:var(--r-m);border:1px solid var(--border);min-width:0}
 .detail-label{font-size:.78rem;color:var(--text-3);margin-bottom:4px;font-weight:500}
@@ -239,7 +271,6 @@ a{color:inherit;text-decoration:none}
 @keyframes slideIn{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ===== Tablet ===== */
 @media (max-width:900px){
   .sidebar{transform:translateX(100%);box-shadow:var(--shadow-l)}
   .sidebar.open{transform:translateX(0)}
@@ -248,7 +279,6 @@ a{color:inherit;text-decoration:none}
   .topbar-title{font-size:1.15rem}
 }
 
-/* ===== Mobile: الجداول تتحول لكروت ===== */
 @media (max-width:640px){
   .data-table{min-width:0 !important;width:100%}
   .data-table thead{display:none}
@@ -417,7 +447,7 @@ code.inline{background:var(--bg-3);padding:2px 8px;border-radius:4px;font-size:.
 const CONFIG = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbygsDqIAiAiUeI7qFyQQTzqqgC3lPrilaxCg70OYtGddtwGR8YY-dc7gLh_lnWTdQg/exec",
   STORAGE_KEY: "sultan_dashboard_v1",
-  AUTO_REFRESH_MS: 60000,
+  AUTO_REFRESH_MS: 30000,
   STATUSES: ["طلب جديد","قيد التحضير","جاهز","تم التسليم","ملغي"]
 };
 
@@ -431,6 +461,9 @@ const state = {
   accessKey: null,
   lastFetch: null,
   autoRefreshTimer: null,
+  knownOrders: new Set(),
+  knownInitialized: false,
+  pendingNew: [],
   filters: {
     orders: { search:"", status:"all", dateFrom:"", dateTo:"" },
     customers: { search:"", type:"all", sortBy:"orders" },
@@ -485,7 +518,6 @@ const Utils = {
     catch { return ""; }
   },
 
-  /* توحيد رقم الهاتف المصري (يعالج حذف الصفر الأول بواسطة جوجل شيت) */
   normalizePhone(phone){
     if (phone === null || phone === undefined) return null;
     let p = String(phone).replace(/[\s\-().]/g,"");
@@ -564,6 +596,33 @@ const Utils = {
     return out;
   },
 
+  /* =========================================================
+     حماية الأرقام: لو خانة الإجمالي في الشيت فيها قيمة مش معقولة
+     (تاريخ اتحول لرقم فلكي / رقم سالب / أكبر من مليون) بنتجاهلها
+     وبنعيد الحساب من سطور المنتجات نفسها
+     ========================================================= */
+  saneFinalTotal(o){
+    const itemsSum = this.parseProducts(o.productsText).reduce((s,p)=>s+(Number(p.total)||0),0);
+    const discount = (o.discountApplied === "نعم") ? (Number(o.discountAmount)||0) : 0;
+    const computed = itemsSum - discount;
+    const stored = Number(o.finalTotal);
+    const storedOk = isFinite(stored) && stored > 0 && stored <= 1000000;
+    if (storedOk){
+      // لو الفرق بين المخزن والمحسوب شاسع بشكل مستحيل -> نثق في المحسوب
+      if (computed > 0 && Math.abs(stored - computed) > computed) return computed;
+      return stored;
+    }
+    return computed > 0 ? computed : 0;
+  },
+
+  saneOriginalTotal(o){
+    const itemsSum = this.parseProducts(o.productsText).reduce((s,p)=>s+(Number(p.total)||0),0);
+    const stored = Number(o.originalTotal);
+    const storedOk = isFinite(stored) && stored >= 0 && stored <= 1000000;
+    if (storedOk) return stored;
+    return itemsSum;
+  },
+
   downloadCSV(rows, filename){
     const BOM = "\uFEFF";
     const csv = BOM + rows.map(r => r.map(c => {
@@ -610,7 +669,7 @@ const API = {
 };
 
 /* ==========================================================================
-   Analytics — سياسة المبيعات: المحقق = كل الطلبات غير الملغاة
+   Analytics
    ========================================================================== */
 const Analytics = {
   orderStats(){
@@ -801,17 +860,75 @@ const UI = {
 };
 
 /* ==========================================================================
+   إشعار الطلب الجديد
+   ========================================================================== */
+const NewAlert = {
+  show(){
+    let el = document.getElementById("newOrderAlert");
+    if (!el){
+      el = document.createElement("div");
+      el.id = "newOrderAlert";
+      el.className = "new-order-alert";
+      el.addEventListener("click", () => NewAlert.open());
+      document.body.appendChild(el);
+    }
+    const n = state.pendingNew.length;
+    const latest = state.pendingNew[0];
+    const title = n === 1 ? "طلب جديد وصل!" : (n === 2 ? "طلبان جديدان وصلا!" : n + " طلبات جديدة وصلت!");
+    el.innerHTML = `
+      <div class="noa-icon"><i class="fas fa-bell"></i></div>
+      <div class="noa-text">
+        <strong>${title}</strong>
+        <small>${Utils.escapeHtml(latest.fullName || "عميل")} — ${Utils.formatMoney(latest.finalTotal)} — اضغط للعرض</small>
+      </div>
+      <span class="noa-count">${n}</span>
+    `;
+    el.classList.add("show");
+  },
+
+  open(){
+    const target = state.pendingNew[0];
+    state.pendingNew = [];
+    const el = document.getElementById("newOrderAlert");
+    if (el) el.classList.remove("show");
+    navigate("orders");
+    if (target) setTimeout(()=>openOrderModal(target.rowIndex), 200);
+  }
+};
+
+function detectNewOrders(){
+  const keyOf = o => (o.orderNumber || ("row" + o.rowIndex));
+  if (!state.knownInitialized){
+    state.knownOrders = new Set(state.orders.map(keyOf));
+    state.knownInitialized = true;
+    return;
+  }
+  const fresh = state.orders.filter(o => !state.knownOrders.has(keyOf(o)));
+  state.knownOrders = new Set(state.orders.map(keyOf));
+  if (fresh.length){
+    state.pendingNew = fresh.concat(state.pendingNew);
+    NewAlert.show();
+  }
+}
+
+/* ==========================================================================
    Data Loading
    ========================================================================== */
 async function loadOrders(silent=true){
   try {
     if (!silent) UI.toast("جاري جلب البيانات...", "info");
     const data = await API.getOrders();
-    state.orders = data.orders || [];
+    // تنظيف الأرقام قبل أي حساب: أي إجمالي مش معقول بيتصلح من سطور المنتجات
+    state.orders = (data.orders || []).map(o => {
+      o.finalTotal = Utils.saneFinalTotal(o);
+      o.originalTotal = Utils.saneOriginalTotal(o);
+      return o;
+    });
     state.lastFetch = new Date();
     Analytics.buildCustomers();
     UI.updateLastUpdate();
     Storage.save({accessKey: state.accessKey});
+    detectNewOrders();
     return true;
   } catch (err) {
     console.error(err);
@@ -825,7 +942,6 @@ async function loadOrders(silent=true){
    ========================================================================== */
 const Views = {
 
-  /* ----- Dashboard ----- */
   renderDashboard(){
     const s = Analytics.orderStats();
     const topProducts = Array.from(s.productCount.entries()).sort((a,b)=>b[1].qty-a[1].qty).slice(0,8);
@@ -1029,7 +1145,6 @@ const Views = {
     }, 50);
   },
 
-  /* ----- Orders (هيكل ثابت + تحديث الجدول فقط => البحث يشتغل بحرية) ----- */
   renderOrders(){
     const f = state.filters.orders;
     return `
@@ -1136,7 +1251,6 @@ const Views = {
     navigate("orders");
   },
 
-  /* ----- Customers (هيكل ثابت + تحديث ديناميكي) ----- */
   renderCustomers(){
     const map = state.customers;
     const invalidCount = state.orders.filter(o=>!Utils.normalizePhone(o.phone)).length;
@@ -1348,7 +1462,6 @@ const Views = {
     UI.toast("تم تصدير ملف العملاء بنجاح", "success");
   },
 
-  /* ----- Products ----- */
   renderProducts(){
     return `
       <div class="panel">
@@ -1425,7 +1538,6 @@ const Views = {
     Views.updateProductsTable();
   },
 
-  /* ----- Reports ----- */
   renderReports(){
     const f = state.filters.reports;
     const filtered = state.orders.filter(o => Utils.isInDateRange(o.orderTime, f.dateFrom, f.dateTo));
@@ -1602,7 +1714,6 @@ const Views = {
     UI.toast("تم تصدير التقرير بنجاح", "success");
   },
 
-  /* ----- Settings ----- */
   renderSettings(){
     return `
       <div class="panel">
@@ -1648,6 +1759,19 @@ const Views = {
 
       <div class="panel">
         <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-bell"></i> تنبيهات الطلبات الجديدة</div>
+        </div>
+        <div class="panel-body">
+          <p class="text-muted" style="font-size:.88rem;line-height:1.9">
+            الداشبورد بيسأل الخادم تلقائياً كل <strong>30 ثانية</strong>.<br>
+            أي طلب جديد بيتسجل في الشيت → بينزل بيه شريط أحمر فوق فوراً، وبيفضل ثابت لحد ما تضغط عليه.<br>
+            لو وصل أكتر من طلب والشريط لسه ظاهر، العدد بيتحدث لوحده.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
           <div class="panel-title"><i class="fas fa-shield-alt"></i> الأمان والاتصال</div>
         </div>
         <div class="panel-body">
@@ -1668,7 +1792,7 @@ const Views = {
         </div>
         <div class="panel-body">
           <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label">إصدار الـ Dashboard</div><div class="detail-value">1.2.0</div></div>
+            <div class="detail-item"><div class="detail-label">إصدار الـ Dashboard</div><div class="detail-value">1.3.1</div></div>
             <div class="detail-item"><div class="detail-label">مصدر البيانات</div><div class="detail-value">Google Sheets (الطلبات)</div></div>
             <div class="detail-item"><div class="detail-label">حالة الاتصال</div><div class="detail-value text-success">${state.lastFetch?'متصل':'غير متصل'}</div></div>
             <div class="detail-item"><div class="detail-label">إجمالي الطلبات المحملة</div><div class="detail-value">${state.orders.length}</div></div>
@@ -1976,7 +2100,6 @@ function startAutoRefresh(){
   state.autoRefreshTimer = setInterval(async ()=>{
     if (state.currentView === "settings") return;
     await loadOrders(true);
-    // تحديث جزئي بدون إعادة رسم الصفحة (عشان ما يفقدش الفوكس من البحث)
     if (state.currentView === "orders") Views.updateOrdersTable();
     else if (state.currentView === "customers") Views.updateCustomers();
     else if (state.currentView === "products") Views.updateProductsTable();
