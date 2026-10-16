@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم مطعم السلطان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg-1:#0f0a07;--bg-2:#1a1411;--bg-3:#261f1a;--bg-4:#2a1f1a;--bg-hover:#3a2e26;
+  --text-1:#f5e9d8;--text-2:#c4b4a4;--text-3:#8a7a6a;
+  --border:#3a2e26;
+  --accent:#d92d27;--accent-h:#b81e1a;--accent-soft:rgba(217,45,39,.15);
+  --secondary:#ff8a18;--success:#228b55;--warning:#f59e0b;--danger:#dc2626;--info:#0ea5e9;
+  --shadow-s:0 2px 8px rgba(0,0,0,.3);--shadow-m:0 8px 20px rgba(0,0,0,.4);--shadow-l:0 15px 35px rgba(0,0,0,.5);
+  --r-s:8px;--r-m:12px;--r-l:16px;--tr:.2s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Cairo',Tahoma,sans-serif;background:var(--bg-1);color:var(--text-1);min-height:100vh;overflow-x:hidden;line-height:1.5}
+button,input,select,textarea{font-family:inherit}
+a{color:inherit;text-decoration:none}
+
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:260px;background:var(--bg-2);border-left:1px solid var(--border);
+  padding:24px 0;position:fixed;top:0;right:0;height:100vh;overflow-y:auto;
+  z-index:100;transition:transform .3s ease;display:flex;flex-direction:column;
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.main-content{flex:1;margin-right:260px;padding:24px;min-height:100vh}
+
+.sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:700}
+.brand-icon{
+  width:44px;height:44px;
+  background:linear-gradient(135deg,var(--accent),var(--secondary));
+  border-radius:var(--r-m);display:grid;place-items:center;color:#fff;font-size:1.3rem;
+  box-shadow:0 4px 12px var(--accent-soft);
+}
+.brand-text{display:flex;flex-direction:column;gap:2px}
+.brand-text small{font-size:.75rem;color:var(--text-3);font-weight:500}
+
+.sidebar-nav{display:flex;flex-direction:column;gap:4px;padding:0 12px;flex:1}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r-m);
+  color:var(--text-2);cursor:pointer;transition:var(--tr);font-weight:500;font-size:.95rem;
+  border:none;background:transparent;width:100%;text-align:right;
+}
+.nav-item:hover{background:var(--bg-hover);color:var(--text-1)}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav-item i{width:20px;text-align:center;font-size:1.05rem}
+.nav-section{padding:12px 24px;font-size:.75rem;color:var(--text-3);text-transform:uppercase;font-weight:600;margin-top:12px}
+
+.sidebar-footer{padding:12px;border-top:1px solid var(--border)}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;
+  padding:16px 20px;background:var(--bg-2);border-radius:var(--r-l);border:1px solid var(--border);
+}
+.topbar-title{font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.topbar-title i{color:var(--accent)}
+.topbar-actions{display:flex;gap:12px;align-items:center}
+.mobile-menu-btn{display:none;width:40px;height:40px;border-radius:var(--r-m);background:var(--bg-4);border:1px solid var(--border);color:var(--text-1);font-size:1.1rem;cursor:pointer}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 18px;border-radius:var(--r-m);font-weight:600;font-size:.92rem;
+  cursor:pointer;transition:var(--tr);border:none;font-family:inherit;white-space:nowrap;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-h)}
+.btn-secondary{background:var(--bg-3);color:var(--text-1);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg-hover)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:6px 12px;font-size:.85rem}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:var(--r-m)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.input,.select,.textarea{
+  width:100%;padding:10px 14px;background:var(--bg-3);border:1px solid var(--border);
+  border-radius:var(--r-m);color:var(--text-1);font-size:.92rem;transition:var(--tr);
+}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input::placeholder,.textarea::placeholder{color:var(--text-3)}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:.88rem;font-weight:500;color:var(--text-2);margin-bottom:6px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{
+  background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);
+  padding:20px;transition:var(--tr);position:relative;overflow:hidden;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-m);border-color:var(--bg-hover)}
+.stat-card-icon{
+  width:48px;height:48px;border-radius:var(--r-m);display:grid;place-items:center;
+  font-size:1.25rem;margin-bottom:16px;
+}
+.icon-blue{background:rgba(14,165,233,.15);color:var(--info)}
+.icon-red{background:var(--accent-soft);color:var(--accent)}
+.icon-green{background:rgba(34,139,85,.15);color:var(--success)}
+.icon-orange{background:rgba(245,158,11,.15);color:var(--warning)}
+.icon-purple{background:rgba(139,92,246,.15);color:#8b5cf6}
+
+.stat-card-label{font-size:.85rem;color:var(--text-3);margin-bottom:6px;font-weight:500}
+.stat-card-value{font-size:1.7rem;font-weight:800;color:var(--text-1);margin-bottom:6px}
+.stat-card-trend{font-size:.8rem;color:var(--text-3)}
+
+.panel{background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);margin-bottom:20px;overflow:hidden}
+.panel-header{
+  padding:16px 20px;border-bottom:1px solid var(--border);display:flex;
+  align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.panel-title{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.panel-title i{color:var(--accent)}
+.panel-body{padding:20px}
+
+.table-wrap{overflow-x:auto}
+.data-table{width:100%;border-collapse:collapse;min-width:600px}
+.data-table th{
+  background:var(--bg-3);padding:12px 16px;text-align:right;font-weight:600;
+  font-size:.85rem;color:var(--text-2);border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.data-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:.9rem;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr.clickable{cursor:pointer;transition:var(--tr)}
+.data-table tr.clickable:hover{background:var(--bg-hover)}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:.78rem;font-weight:600}
+.badge-new{background:rgba(14,165,233,.15);color:var(--info)}
+.badge-preparing{background:rgba(245,158,11,.15);color:var(--warning)}
+.badge-ready{background:rgba(217,45,39,.15);color:var(--accent)}
+.badge-delivered{background:rgba(34,139,85,.15);color:var(--success)}
+.badge-cancelled{background:rgba(220,38,38,.15);color:var(--danger)}
+.badge-success{background:rgba(34,139,85,.15);color:var(--success)}
+.badge-warn{background:rgba(245,158,11,.15);color:var(--warning)}
+.badge-info{background:rgba(14,165,233,.15);color:var(--info)}
+
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filters .input,.filters .select{width:auto;min-width:160px}
+.search-box{position:relative;flex:1;min-width:200px}
+.search-box input{padding-right:38px}
+.search-box i{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-3)}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  display:none;place-items:center;z-index:1000;padding:20px;
+}
+.modal-overlay.show{display:grid;animation:fadeIn .2s ease}
+.modal{
+  background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);
+  max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-l);
+}
+.modal.wide{max-width:900px}
+.modal-header{
+  padding:18px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg-4);z-index:2;
+}
+.modal-title{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.close-btn{
+  width:32px;height:32px;border-radius:50%;background:var(--bg-3);
+  border:none;color:var(--text-2);cursor:pointer;transition:var(--tr);display:grid;place-items:center;
+}
+.close-btn:hover{background:var(--bg-hover);color:var(--text-1)}
+
+.login-screen{
+  min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 20%,#2a1f1a 0%,var(--bg-1) 70%);padding:20px;
+}
+.login-card{
+  background:var(--bg-4);border:1px solid var(--border);border-radius:var(--r-l);
+  padding:40px 32px;max-width:420px;width:100%;box-shadow:var(--shadow-l);text-align:center;
+}
+.login-logo{
+  width:72px;height:72px;margin:0 auto 20px;
+  background:linear-gradient(135deg,var(--accent),var(--secondary));
+  border-radius:var(--r-l);display:grid;place-items:center;font-size:2rem;color:#fff;
+  box-shadow:0 10px 30px var(--accent-soft);
+}
+.login-title{font-size:1.4rem;margin-bottom:8px}
+.login-sub{color:var(--text-3);margin-bottom:28px;font-size:.9rem}
+.login-error{
+  background:rgba(220,38,38,.15);color:var(--danger);padding:10px;border-radius:var(--r-m);
+  font-size:.88rem;margin-top:12px;display:none;align-items:center;gap:8px;justify-content:center;
+}
+.login-error.show{display:flex}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-3)}
+.empty-state i{font-size:3rem;margin-bottom:16px;opacity:.5}
+.empty-state h3{color:var(--text-2);margin-bottom:8px}
+
+.loader{
+  display:inline-block;width:18px;height:18px;border:2px solid var(--bg-3);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
+}
+.page-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:16px}
+
+.toast-container{position:fixed;top:20px;left:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{
+  background:var(--bg-4);border:1px solid var(--border);color:var(--text-1);
+  padding:12px 18px;border-radius:var(--r-m);box-shadow:var(--shadow-m);
+  display:flex;align-items:center;gap:10px;font-size:.92rem;min-width:260px;
+  animation:slideIn .3s ease;border-right:4px solid var(--info);pointer-events:auto;
+}
+.toast.success{border-right-color:var(--success)}
+.toast.success i{color:var(--success)}
+.toast.error{border-right-color:var(--danger)}
+.toast.error i{color:var(--danger)}
+.toast.warning{border-right-color:var(--warning)}
+.toast.warning i{color:var(--warning)}
+
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.detail-item{background:var(--bg-3);padding:12px 14px;border-radius:var(--r-m);border:1px solid var(--border)}
+.detail-label{font-size:.78rem;color:var(--text-3);margin-bottom:4px;font-weight:500}
+.detail-value{font-size:1rem;font-weight:600;color:var(--text-1);word-break:break-word}
+
+.section-title{font-size:.95rem;font-weight:700;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.section-title i{color:var(--accent)}
+
+.timeline{position:relative;padding-right:28px}
+.timeline::before{content:"";position:absolute;right:8px;top:6px;bottom:6px;width:2px;background:var(--border)}
+.timeline-item{position:relative;padding:8px 0 8px 0}
+.timeline-item::before{
+  content:"";position:absolute;right:-24px;top:14px;width:12px;height:12px;
+  border-radius:50%;background:var(--accent);border:3px solid var(--bg-4);
+}
+.timeline-item.success::before{background:var(--success)}
+.timeline-item.muted::before{background:var(--text-3)}
+.timeline-date{font-size:.78rem;color:var(--text-3);margin-bottom:2px}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (max-width:900px){
+  .sidebar{transform:translateX(100%);box-shadow:var(--shadow-l)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-right:0;padding:16px}
+  .mobile-menu-btn{display:grid;place-items:center}
+  .topbar-title{font-size:1.15rem}
+}
+@media (max-width:600px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-card{padding:14px}
+  .stat-card-value{font-size:1.3rem}
+  .form-row{grid-template-columns:1fr}
+  .filters .input,.filters .select{width:100%;min-width:0}
+  .filters{flex-direction:column;align-items:stretch}
+  .search-box{width:100%}
+  .panel-header{flex-direction:column;align-items:stretch}
+  .data-table{font-size:.85rem}
+  .data-table th,.data-table td{padding:8px 10px}
+  .topbar-actions .btn span{display:none}
+}
+
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg-1)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--bg-hover)}
+
+.text-muted{color:var(--text-3)}
+.text-success{color:var(--success)}
+.text-danger{color:var(--danger)}
+.text-warning{color:var(--warning)}
+.text-accent{color:var(--accent)}
+.text-center{text-align:center}
+.mt-1{margin-top:8px}.mt-2{margin-top:16px}.mt-3{margin-top:24px}
+.mb-1{margin-bottom:8px}.mb-2{margin-bottom:16px}
+.flex{display:flex}.gap-1{gap:8px}.gap-2{gap:16px}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+code.inline{background:var(--bg-3);padding:2px 8px;border-radius:4px;font-size:.85rem;direction:ltr;display:inline-block}
+</style>
+</head>
+<body>
+
+<!-- ===== Login Screen ===== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo"><i class="fas fa-crown"></i></div>
+    <h1 class="login-title">لوحة تحكم السلطان</h1>
+    <p class="login-sub">أدخل رمز الوصول للدخول إلى لوحة الإدارة</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <input type="password" class="input" id="accessKeyInput" placeholder="رمز الوصول" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> <span>دخول</span>
+      </button>
+    </form>
+    <div class="login-error" id="loginError"><i class="fas fa-exclamation-circle"></i> <span>رمز الوصول غير صحيح</span></div>
+    <p class="text-muted" style="margin-top:24px;font-size:.8rem">
+      <i class="fas fa-lock"></i> الاتصال مشفّر بين المتصفح والخادم
+    </p>
+  </div>
+</div>
+
+<!-- ===== Main App ===== -->
+<div class="app" id="mainApp" style="display:none">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon"><i class="fas fa-crown"></i></div>
+        <div class="brand-text">
+          <span>كريب السلطان</span>
+          <small>لوحة الإدارة</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-section">القائمة الرئيسية</div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="dashboard"><i class="fas fa-chart-line"></i><span>الرئيسية</span></button>
+      <button class="nav-item" data-view="orders"><i class="fas fa-clipboard-list"></i><span>الطلبات</span></button>
+      <button class="nav-item" data-view="customers"><i class="fas fa-users"></i><span>العملاء</span></button>
+      <button class="nav-item" data-view="products"><i class="fas fa-utensils"></i><span>المنتجات</span></button>
+      <button class="nav-item" data-view="reports"><i class="fas fa-file-invoice-dollar"></i><span>التقارير المالية</span></button>
+
+      <div class="nav-section">النظام</div>
+      <button class="nav-item" data-view="settings"><i class="fas fa-cog"></i><span>الإعدادات</span></button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>خروج</span></button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        <h1 class="topbar-title" id="pageTitle"><i class="fas fa-chart-line"></i> <span>الرئيسية</span></h1>
+      </div>
+      <div class="topbar-actions">
+        <span id="lastUpdate" class="text-muted" style="font-size:.82rem"></span>
+        <button class="btn btn-secondary btn-sm" id="refreshBtn"><i class="fas fa-sync-alt"></i> <span>تحديث</span></button>
+      </div>
+    </div>
+    <div id="viewsContainer"></div>
+  </main>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-receipt"></i> تفاصيل الطلب</h3>
+      <button class="close-btn" onclick="UI.closeModal('orderModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="orderModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="customerModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-user"></i> تفاصيل العميل</h3>
+      <button class="close-btn" onclick="UI.closeModal('customerModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="customerModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h3 class="modal-title" id="confirmTitle"><i class="fas fa-exclamation-triangle"></i> تأكيد</h3>
+      <button class="close-btn" onclick="UI.closeModal('confirmModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="UI.closeModal('confirmModal')">إلغاء</button>
+      <button class="btn btn-danger" id="confirmOk">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+const CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbygsDqIAiAiUeI7qFyQQTzqqgC3lPrilaxCg70OYtGddtwGR8YY-dc7gLh_lnWTdQg/exec",
+  STORAGE_KEY: "sultan_dashboard_v1",
+  AUTO_REFRESH_MS: 60000,
+  STATUSES: ["طلب جديد","قيد التحضير","جاهز","تم التسليم","ملغي"]
+};
+
+/* ==========================================================================
+   State
+   ========================================================================== */
+const state = {
+  orders: [],
+  customers: new Map(),
+  currentView: "dashboard",
+  accessKey: null,
+  lastFetch: null,
+  autoRefreshTimer: null,
+  filters: {
+    orders: { search:"", status:"all", dateFrom:"", dateTo:"" },
+    customers: { search:"", type:"all", period:"all", sortBy:"orders" },
+    products: { search:"" },
+    reports: { dateFrom:"", dateTo:"" }
+  },
+  charts: {}
+};
+
+/* ==========================================================================
+   Storage
+   ========================================================================== */
+const Storage = {
+  save(data){ try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(data)); } catch(e){} },
+  load(){ try { const d = localStorage.getItem(CONFIG.STORAGE_KEY); return d ? JSON.parse(d) : null; } catch(e){ return null; } },
+  clear(){ localStorage.removeItem(CONFIG.STORAGE_KEY); }
+};
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+const Utils = {
+  escapeHtml(str){
+    if (str === null || str === undefined) return "";
+    const div = document.createElement("div");
+    div.textContent = String(str);
+    return div.innerHTML;
+  },
+
+  formatMoney(n){
+    const num = Number(n||0);
+    return num.toLocaleString("ar-EG",{maximumFractionDigits:2}) + " ج.م";
+  },
+
+  formatDate(d){
+    if (!d) return "-";
+    try {
+      const date = new Date(d);
+      return date.toLocaleString("ar-EG",{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+    } catch { return String(d); }
+  },
+
+  formatDateOnly(d){
+    if (!d) return "-";
+    try { return new Date(d).toLocaleDateString("ar-EG",{year:"numeric",month:"short",day:"numeric"}); }
+    catch { return String(d); }
+  },
+
+  formatTime(d){
+    if (!d) return "";
+    try { return new Date(d).toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"}); }
+    catch { return ""; }
+  },
+
+  /* توحيد رقم الهاتف المصري
+     - يشيل مسافات وشرطات وأقواس
+     - يحول +20 / 0020 / 20 لصيغة 01x
+     - يعالج حالة جوجل شيت لما يخزن الرقم كـ رقم ويحذف الصفر الأول
+       (مثلاً 1008136174 -> 01008136174)
+     - أي رقم ناقص أو غير صالح يرجع null ولا يُدمج مع عميل آخر */
+  normalizePhone(phone){
+    if (phone === null || phone === undefined) return null;
+    let p = String(phone).replace(/[\s\-().]/g,"");
+    if (!p) return null;
+    if (p.startsWith("+20")) p = "0" + p.substring(3);
+    else if (p.startsWith("0020")) p = "0" + p.substring(4);
+    else if (p.startsWith("200") && p.length === 13) p = "0" + p.substring(3);
+    else if (p.startsWith("20") && p.length === 12) p = "0" + p.substring(2);
+    else if (p.length === 10 && p.charAt(0) === "1") p = "0" + p; // شيت حذف الصفر الأول
+    if (/^01[0-9]{9}$/.test(p)) return p;
+    return null;
+  },
+
+  whatsappLink(phone){
+    const n = this.normalizePhone(phone);
+    if (!n) return null;
+    return "https://wa.me/2" + n.substring(1);
+  },
+  telLink(phone){
+    const n = this.normalizePhone(phone);
+    return n ? ("tel:" + n) : null;
+  },
+
+  isToday(d){
+    if (!d) return false;
+    const t = new Date(), dd = new Date(d);
+    return t.toDateString() === dd.toDateString();
+  },
+  isThisWeek(d){
+    if (!d) return false;
+    const now = new Date(), dd = new Date(d);
+    const wk = new Date(now.getTime() - 7*24*60*60*1000);
+    return dd >= wk && dd <= now;
+  },
+  isThisMonth(d){
+    if (!d) return false;
+    const now = new Date(), dd = new Date(d);
+    return dd.getMonth() === now.getMonth() && dd.getFullYear() === now.getFullYear();
+  },
+  daysBetween(a,b){
+    const d1 = new Date(a), d2 = new Date(b);
+    return Math.floor(Math.abs(d2-d1)/(1000*60*60*24));
+  },
+  isInDateRange(d, from, to){
+    if (!d) return false;
+    const dd = new Date(d);
+    if (from && dd < new Date(from)) return false;
+    if (to) {
+      const toEnd = new Date(to); toEnd.setHours(23,59,59,999);
+      if (dd > toEnd) return false;
+    }
+    return true;
+  },
+
+  statusBadge(s){
+    const map = {
+      "طلب جديد":    {cls:"badge-new",      label:"جديد",       icon:"star"},
+      "قيد التحضير": {cls:"badge-preparing", label:"قيد التحضير", icon:"utensils"},
+      "جاهز":        {cls:"badge-ready",     label:"جاهز",       icon:"check-circle"},
+      "تم التسليم":  {cls:"badge-delivered", label:"تم التسليم", icon:"check-double"},
+      "ملغي":        {cls:"badge-cancelled", label:"ملغي",       icon:"times-circle"}
+    };
+    const info = map[s] || {cls:"badge-new",label:s||"غير محدد",icon:"circle"};
+    return `<span class="badge ${info.cls}"><i class="fas fa-${info.icon}"></i> ${this.escapeHtml(info.label)}</span>`;
+  },
+
+  /* تحليل نص المنتجات في الشيت: "اسم المنتج × الكمية = الإجمالي جنيه" */
+  parseProducts(text){
+    if (!text) return [];
+    const lines = String(text).split("\n").map(l=>l.trim()).filter(Boolean);
+    const out = [];
+    for (const line of lines){
+      const m = line.match(/^(.+?)\s*×\s*(\d+)\s*=\s*(\d+)/);
+      if (m) out.push({name:m[1].trim(), qty:parseInt(m[2]), total:parseInt(m[3])});
+      else out.push({name:line, qty:1, total:0});
+    }
+    return out;
+  },
+
+  downloadCSV(rows, filename){
+    const BOM = "\uFEFF";
+    const csv = BOM + rows.map(r => r.map(c => {
+      const s = c === null || c === undefined ? "" : String(c);
+      return /[",\n;]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+    }).join(",")).join("\n");
+    const blob = new Blob([csv],{type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 100);
+  }
+};
+
+/* ==========================================================================
+   API
+   ========================================================================== */
+const API = {
+  async request(action, params={}){
+    const url = new URL(CONFIG.APPS_SCRIPT_URL);
+    url.searchParams.set("action", action);
+    if (state.accessKey) url.searchParams.set("access_key", state.accessKey);
+    for (const [k,v] of Object.entries(params)) url.searchParams.set(k,v);
+
+    const resp = await fetch(url.toString());
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error || "فشل العملية");
+    return data;
+  },
+
+  async verify(key){
+    try {
+      const url = `${CONFIG.APPS_SCRIPT_URL}?action=verifyAccess&access_key=${encodeURIComponent(key)}`;
+      const r = await fetch(url);
+      const d = await r.json();
+      return d.success === true;
+    } catch { return false; }
+  },
+
+  async getOrders(){ return this.request("getOrders"); },
+  async updateStatus(rowIndex, status){ return this.request("updateOrderStatus",{rowIndex:String(rowIndex),status}); }
+};
+
+/* ==========================================================================
+   Analytics
+   سياسة المبيعات: المبيعات المحققة = كل الطلبات غير الملغاة.
+   الطلبات الملغاة تبقى في السجل ولا تُحسب في المبيعات.
+   ========================================================================== */
+const Analytics = {
+  orderStats(){
+    const orders = state.orders;
+    const byStatus = {"طلب جديد":0,"قيد التحضير":0,"جاهز":0,"تم التسليم":0,"ملغي":0};
+    let todaySales=0, weekSales=0, monthSales=0;
+    let todayOrders=0, weekOrders=0, monthOrders=0;
+    let totalValueAll = 0;   // قيمة كل الطلبات بما فيها الملغاة
+    let realizedSales = 0;   // قيمة الطلبات غير الملغاة
+    let realizedCount = 0;   // عدد الطلبات غير الملغاة
+    const productCount = new Map();
+
+    for (const o of orders){
+      byStatus[o.status] = (byStatus[o.status]||0) + 1;
+      const cancelled = o.status === "ملغي";
+      const amt = Number(o.finalTotal)||0;
+      totalValueAll += amt;
+
+      if (!cancelled){
+        realizedSales += amt;
+        realizedCount++;
+        if (Utils.isToday(o.orderTime)){ todaySales += amt; todayOrders++; }
+        if (Utils.isThisWeek(o.orderTime)){ weekSales += amt; weekOrders++; }
+        if (Utils.isThisMonth(o.orderTime)){ monthSales += amt; monthOrders++; }
+      }
+
+      const products = Utils.parseProducts(o.productsText);
+      for (const p of products){
+        const cur = productCount.get(p.name) || {qty:0, total:0};
+        cur.qty += p.qty;
+        if (!cancelled) cur.total += p.total;
+        productCount.set(p.name, cur);
+      }
+    }
+
+    const delivered = orders.filter(o=>o.status==="تم التسليم").length;
+    const avgOrder = realizedCount>0 ? realizedSales/realizedCount : 0;
+
+    return {
+      total: orders.length, byStatus,
+      todaySales, weekSales, monthSales,
+      todayOrders, weekOrders, monthOrders,
+      totalValueAll, realizedSales, realizedCount,
+      avgOrder, productCount,
+      delivered
+    };
+  },
+
+  buildCustomers(){
+    const map = new Map(); // الرقم الموحد -> العميل
+
+    for (const o of state.orders){
+      const norm = Utils.normalizePhone(o.phone);
+      if (!norm){
+        // رقم ناقص أو غير صالح: لا يُدمج مع أي عميل آخر
+        continue;
+      }
+      if (!map.has(norm)){
+        map.set(norm, {
+          phoneNorm: norm,
+          phoneOrig: o.phone,
+          name: o.fullName || "عميل",
+          orders: []
+        });
+      }
+      map.get(norm).orders.push(o);
+      const lastO = map.get(norm).orders.reduce((a,b)=> new Date(a.orderTime)>new Date(b.orderTime)?a:b);
+      if (lastO.fullName) map.get(norm).name = lastO.fullName;
+    }
+
+    for (const [key, c] of map){
+      c.orders.sort((a,b)=> new Date(b.orderTime) - new Date(a.orderTime));
+      c.totalOrders = c.orders.length;
+      c.deliveredOrders = c.orders.filter(o=>o.status==="تم التسليم").length;
+      c.cancelledOrders = c.orders.filter(o=>o.status==="ملغي").length;
+      c.activeOrders = c.orders.filter(o=>o.status!=="ملغي").length;
+
+      c.totalOrderValue = c.orders.reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
+      // المبيعات المحققة = كل الطلبات غير الملغاة
+      c.realizedSales = c.orders.filter(o=>o.status!=="ملغي").reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
+      c.avgCompleted = c.activeOrders>0 ? c.realizedSales/c.activeOrders : 0;
+
+      c.firstOrder = c.orders[c.orders.length-1];
+      c.lastOrder = c.orders[0];
+      c.daysSinceLastOrder = Utils.daysBetween(c.lastOrder.orderTime, new Date());
+      c.isRepeat = c.totalOrders > 1;
+
+      const pm = new Map();
+      for (const o of c.orders){
+        if (o.status==="ملغي") continue;
+        for (const p of Utils.parseProducts(o.productsText)){
+          const cur = pm.get(p.name)||{qty:0,total:0};
+          cur.qty += p.qty; cur.total += p.total;
+          pm.set(p.name,cur);
+        }
+      }
+      c.favoriteProducts = Array.from(pm.entries())
+        .sort((a,b)=>b[1].qty-a[1].qty).slice(0,5)
+        .map(([n,d])=>({name:n,qty:d.qty,total:d.total}));
+
+      const addrMap = new Map();
+      for (const o of c.orders){
+        const a = (o.address||"").trim();
+        if (!a) continue;
+        if (!addrMap.has(a)) addrMap.set(a,[]);
+        addrMap.get(a).push(o.orderTime);
+      }
+      c.addresses = Array.from(addrMap.entries()).map(([a,dates])=>{
+        dates.sort((x,y)=>new Date(y)-new Date(x));
+        return {address:a, count:dates.length, lastUsed:dates[0]};
+      }).sort((x,y)=> new Date(y.lastUsed)-new Date(x.lastUsed));
+
+      const payMap = {};
+      for (const o of c.orders){ payMap[o.paymentMethod] = (payMap[o.paymentMethod]||0)+1; }
+      c.commonPayment = Object.entries(payMap).sort((a,b)=>b[1]-a[1])[0]?.[0] || "-";
+    }
+
+    state.customers = map;
+    return map;
+  },
+
+  dailySales(days=30){
+    const out = [];
+    const now = new Date();
+    for (let i=days-1;i>=0;i--){
+      const d = new Date(now); d.setDate(d.getDate()-i);
+      const key = d.toISOString().split("T")[0];
+      let sales=0, count=0;
+      for (const o of state.orders){
+        if (o.status==="ملغي") continue;
+        if (!o.orderTime) continue;
+        if (o.orderTime.startsWith(key)){
+          sales += Number(o.finalTotal)||0;
+          count++;
+        }
+      }
+      out.push({ date:key, label:d.toLocaleDateString("ar-EG",{month:"short",day:"numeric"}), sales, count });
+    }
+    return out;
+  }
+};
+
+/* ==========================================================================
+   UI Helpers
+   ========================================================================== */
+const UI = {
+  toast(msg, type="info"){
+    const container = document.getElementById("toastContainer");
+    const icons = {success:"check-circle",error:"times-circle",info:"info-circle",warning:"exclamation-triangle"};
+    const el = document.createElement("div");
+    el.className = `toast ${type}`;
+    el.innerHTML = `<i class="fas fa-${icons[type]||'info-circle'}"></i><span>${Utils.escapeHtml(msg)}</span>`;
+    container.appendChild(el);
+    setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300);}, 3500);
+  },
+
+  openModal(id){
+    document.getElementById(id).classList.add("show");
+    document.body.style.overflow = "hidden";
+  },
+  closeModal(id){
+    document.getElementById(id).classList.remove("show");
+    if (!document.querySelector(".modal-overlay.show")) document.body.style.overflow = "";
+  },
+
+  confirm(title, message){
+    return new Promise(resolve => {
+      document.getElementById("confirmTitle").innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${Utils.escapeHtml(title)}`;
+      document.getElementById("confirmMessage").textContent = message;
+      const ok = document.getElementById("confirmOk");
+      const newOk = ok.cloneNode(true);
+      ok.parentNode.replaceChild(newOk, ok);
+      this.openModal("confirmModal");
+      newOk.addEventListener("click", ()=>{ this.closeModal("confirmModal"); resolve(true); }, {once:true});
+      document.querySelectorAll('#confirmModal .btn-secondary, #confirmModal .close-btn').forEach(b=>{
+        b.addEventListener("click",()=>resolve(false),{once:true});
+      });
+    });
+  },
+
+  showLoader(container){
+    container.innerHTML = `<div class="page-loader"><div class="loader"></div><div class="text-muted">جاري التحميل...</div></div>`;
+  },
+
+  updateLastUpdate(){
+    if (!state.lastFetch) return;
+    const el = document.getElementById("lastUpdate");
+    const diff = Math.floor((Date.now() - state.lastFetch.getTime())/1000);
+    let text;
+    if (diff < 10) text = "تم التحديث الآن";
+    else if (diff < 60) text = `آخر تحديث قبل ${diff} ثانية`;
+    else if (diff < 3600) text = `آخر تحديث قبل ${Math.floor(diff/60)} دقيقة`;
+    else text = `آخر تحديث: ${Utils.formatTime(state.lastFetch)}`;
+    el.textContent = text;
+  }
+};
+
+/* ==========================================================================
+   Data Loading
+   ========================================================================== */
+async function loadOrders(silent=true){
+  try {
+    if (!silent) UI.toast("جاري جلب البيانات...", "info");
+    const data = await API.getOrders();
+    state.orders = data.orders || [];
+    state.lastFetch = new Date();
+    Analytics.buildCustomers();
+    UI.updateLastUpdate();
+    Storage.save({accessKey: state.accessKey});
+    return true;
+  } catch (err) {
+    console.error(err);
+    UI.toast("تعذّر جلب البيانات: " + err.message, "error");
+    return false;
+  }
+}
+
+/* ==========================================================================
+   Views
+   ========================================================================== */
+const Views = {
+
+  /* ----- Dashboard ----- */
+  renderDashboard(){
+    const s = Analytics.orderStats();
+    const topProducts = Array.from(s.productCount.entries()).sort((a,b)=>b[1].qty-a[1].qty).slice(0,8);
+    const recent = state.orders.slice(0,8);
+    const distinctPhones = new Set(state.orders.map(o=>Utils.normalizePhone(o.phone)).filter(Boolean));
+    const repeatCustomers = Array.from(state.customers.values()).filter(c=>c.isRepeat).length;
+
+    return `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon icon-red"><i class="fas fa-shopping-bag"></i></div>
+          <div class="stat-card-label">إجمالي الطلبات</div>
+          <div class="stat-card-value">${s.total}</div>
+          <div class="stat-card-trend">منذ بدء التسجيل</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-blue"><i class="fas fa-star"></i></div>
+          <div class="stat-card-label">طلبات جديدة</div>
+          <div class="stat-card-value">${s.byStatus["طلب جديد"]}</div>
+          <div class="stat-card-trend">بانتظار المراجعة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-orange"><i class="fas fa-utensils"></i></div>
+          <div class="stat-card-label">قيد التحضير</div>
+          <div class="stat-card-value">${s.byStatus["قيد التحضير"]}</div>
+          <div class="stat-card-trend">في المطبخ الآن</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-green"><i class="fas fa-check-double"></i></div>
+          <div class="stat-card-label">تم التسليم</div>
+          <div class="stat-card-value">${s.delivered}</div>
+          <div class="stat-card-trend">طلبات مكتملة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-green"><i class="fas fa-sun"></i></div>
+          <div class="stat-card-label">مبيعات اليوم</div>
+          <div class="stat-card-value">${Utils.formatMoney(s.todaySales)}</div>
+          <div class="stat-card-trend">${s.todayOrders} طلب</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-blue"><i class="fas fa-calendar-week"></i></div>
+          <div class="stat-card-label">مبيعات الأسبوع</div>
+          <div class="stat-card-value">${Utils.formatMoney(s.weekSales)}</div>
+          <div class="stat-card-trend">${s.weekOrders} طلب</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-orange"><i class="fas fa-calendar-alt"></i></div>
+          <div class="stat-card-label">مبيعات الشهر</div>
+          <div class="stat-card-value">${Utils.formatMoney(s.monthSales)}</div>
+          <div class="stat-card-trend">${s.monthOrders} طلب</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-purple"><i class="fas fa-coins"></i></div>
+          <div class="stat-card-label">إجمالي المبيعات المحققة</div>
+          <div class="stat-card-value">${Utils.formatMoney(s.realizedSales)}</div>
+          <div class="stat-card-trend">متوسط الطلب: ${Utils.formatMoney(s.avgOrder)}</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:20px">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-chart-area"></i> المبيعات اليومية (آخر 14 يوم)</div>
+          </div>
+          <div class="panel-body"><canvas id="dailyChart" height="120"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-chart-pie"></i> توزيع الحالات</div>
+          </div>
+          <div class="panel-body"><canvas id="statusChart" height="220"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-clock"></i> أحدث الطلبات</div>
+            <button class="btn btn-secondary btn-sm" onclick="navigate('orders')"><i class="fas fa-arrow-left"></i> عرض الكل</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+              <tbody>
+                ${recent.length===0 ? `<tr><td colspan="4" class="text-center text-muted" style="padding:40px">لا توجد طلبات بعد</td></tr>` :
+                  recent.map(o=>`
+                    <tr class="clickable" onclick="openOrderModal(${o.rowIndex})">
+                      <td><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></td>
+                      <td>${Utils.escapeHtml(o.fullName||"-")}</td>
+                      <td>${Utils.formatMoney(o.finalTotal)}</td>
+                      <td>${Utils.statusBadge(o.status)}</td>
+                    </tr>
+                  `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-fire"></i> أكثر المنتجات طلباً</div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>المنتج</th><th>الكمية</th><th>القيمة</th></tr></thead>
+              <tbody>
+                ${topProducts.length===0 ? `<tr><td colspan="3" class="text-center text-muted" style="padding:40px">لا توجد بيانات</td></tr>` :
+                  topProducts.map(([n,d])=>`
+                    <tr>
+                      <td>${Utils.escapeHtml(n)}</td>
+                      <td><strong>${d.qty}</strong></td>
+                      <td>${Utils.formatMoney(d.total)}</td>
+                    </tr>
+                  `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid mt-3" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+        <div class="stat-card">
+          <div class="stat-card-icon icon-blue"><i class="fas fa-users"></i></div>
+          <div class="stat-card-label">عملاء مميزون</div>
+          <div class="stat-card-value">${distinctPhones.size}</div>
+          <div class="stat-card-trend">بأرقام هواتف موحّدة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-green"><i class="fas fa-user-check"></i></div>
+          <div class="stat-card-label">عملاء متكررون</div>
+          <div class="stat-card-value">${repeatCustomers}</div>
+          <div class="stat-card-trend">طلبوا أكثر من مرة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-orange"><i class="fas fa-ban"></i></div>
+          <div class="stat-card-label">طلبات ملغاة</div>
+          <div class="stat-card-value">${s.byStatus["ملغي"]}</div>
+          <div class="stat-card-trend">محفوظة في السجل</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-purple"><i class="fas fa-receipt"></i></div>
+          <div class="stat-card-label">إجمالي قيمة كل الطلبات</div>
+          <div class="stat-card-value">${Utils.formatMoney(s.totalValueAll)}</div>
+          <div class="stat-card-trend">قبل استبعاد الملغاة</div>
+        </div>
+      </div>
+    `;
+  },
+
+  afterDashboard(){
+    setTimeout(()=>{
+      const s = Analytics.orderStats();
+      const daily = Analytics.dailySales(14);
+      const ctx1 = document.getElementById("dailyChart");
+      if (ctx1 && window.Chart){
+        if (state.charts.daily) state.charts.daily.destroy();
+        state.charts.daily = new Chart(ctx1, {
+          type:"line",
+          data:{
+            labels:daily.map(d=>d.label),
+            datasets:[{
+              label:"المبيعات (ج.م)",
+              data:daily.map(d=>d.sales),
+              borderColor:"#d92d27",
+              backgroundColor:"rgba(217,45,39,.15)",
+              fill:true, tension:.35, pointRadius:4, pointBackgroundColor:"#d92d27", borderWidth:2
+            }]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{labels:{color:"#c4b4a4"}}},
+            scales:{
+              x:{ticks:{color:"#8a7a6a"}, grid:{color:"rgba(58,46,38,.3)"}},
+              y:{ticks:{color:"#8a7a6a"}, grid:{color:"rgba(58,46,38,.3)"}}
+            }
+          }
+        });
+      }
+      const statusData = [
+        {label:"جديد", v:s.byStatus["طلب جديد"], color:"#0ea5e9"},
+        {label:"قيد التحضير", v:s.byStatus["قيد التحضير"], color:"#f59e0b"},
+        {label:"جاهز", v:s.byStatus["جاهز"], color:"#d92d27"},
+        {label:"تم التسليم", v:s.byStatus["تم التسليم"], color:"#228b55"},
+        {label:"ملغي", v:s.byStatus["ملغي"], color:"#6b7280"}
+      ].filter(x=>x.v>0);
+      const ctx2 = document.getElementById("statusChart");
+      if (ctx2 && window.Chart){
+        if (state.charts.status) state.charts.status.destroy();
+        state.charts.status = new Chart(ctx2, {
+          type:"doughnut",
+          data:{
+            labels:statusData.map(d=>d.label),
+            datasets:[{data:statusData.map(d=>d.v), backgroundColor:statusData.map(d=>d.color), borderWidth:0}]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{position:"bottom",labels:{color:"#c4b4a4",padding:12}}}
+          }
+        });
+      }
+    }, 50);
+  },
+
+  /* ----- Orders ----- */
+  renderOrders(){
+    const f = state.filters.orders;
+    const filtered = state.orders.filter(o => {
+      if (f.status !== "all" && o.status !== f.status) return false;
+      if (f.search){
+        const q = f.search.toLowerCase();
+        const normPhone = Utils.normalizePhone(o.phone) || "";
+        if (!(o.orderNumber||"").toLowerCase().includes(q) &&
+            !(o.fullName||"").toLowerCase().includes(q) &&
+            !(o.phone||"").includes(q) &&
+            !normPhone.includes(q)) return false;
+      }
+      if (!Utils.isInDateRange(o.orderTime, f.dateFrom, f.dateTo)) return false;
+      return true;
+    });
+
+    return `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-filter"></i> تصفية الطلبات</div>
+        </div>
+        <div class="panel-body">
+          <div class="filters">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" class="input" placeholder="بحث برقم الطلب، الاسم، أو الهاتف..." id="ordersSearch" value="${Utils.escapeHtml(f.search)}">
+            </div>
+            <select class="select" id="ordersStatus">
+              <option value="all" ${f.status==="all"?"selected":""}>كل الحالات</option>
+              ${CONFIG.STATUSES.map(s=>`<option value="${s}" ${f.status===s?"selected":""}>${s}</option>`).join("")}
+            </select>
+            <input type="date" class="input" id="ordersDateFrom" value="${f.dateFrom}" title="من تاريخ">
+            <input type="date" class="input" id="ordersDateTo" value="${f.dateTo}" title="إلى تاريخ">
+            <button class="btn btn-secondary btn-sm" onclick="Views.clearOrdersFilter()"><i class="fas fa-times"></i> مسح</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-clipboard-list"></i> قائمة الطلبات <span class="badge badge-info">${filtered.length}</span></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="ordersTable">
+            <thead>
+              <tr>
+                <th>رقم الطلب</th>
+                <th>التاريخ</th>
+                <th>العميل</th>
+                <th>الهاتف</th>
+                <th>الإجمالي</th>
+                <th>الدفع</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.length===0 ? `<tr><td colspan="8" class="text-center text-muted" style="padding:40px">لا توجد طلبات مطابقة</td></tr>` :
+                filtered.map(o=>`
+                  <tr>
+                    <td><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></td>
+                    <td>${Utils.formatDate(o.orderTime)}</td>
+                    <td>${Utils.escapeHtml(o.fullName||"-")}</td>
+                    <td style="direction:ltr;text-align:right">${Utils.escapeHtml(Utils.normalizePhone(o.phone) || o.phone || "-")}</td>
+                    <td>${Utils.formatMoney(o.finalTotal)}</td>
+                    <td>${Utils.escapeHtml(o.paymentMethod||"-")}</td>
+                    <td>
+                      <select class="select" style="min-width:130px" onchange="updateOrderStatus(${o.rowIndex}, this.value, this)">
+                        ${CONFIG.STATUSES.map(s=>`<option value="${s}" ${o.status===s?"selected":""}>${s}</option>`).join("")}
+                      </select>
+                    </td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="openOrderModal(${o.rowIndex})"><i class="fas fa-eye"></i></button></td>
+                  </tr>
+                `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  },
+
+  attachOrdersEvents(){
+    const s = document.getElementById("ordersSearch");
+    const st = document.getElementById("ordersStatus");
+    const df = document.getElementById("ordersDateFrom");
+    const dt = document.getElementById("ordersDateTo");
+    const render = () => { navigate("orders", true); };
+    if (s) s.addEventListener("input", e=>{state.filters.orders.search=e.target.value; render();});
+    if (st) st.addEventListener("change", e=>{state.filters.orders.status=e.target.value; render();});
+    if (df) df.addEventListener("change", e=>{state.filters.orders.dateFrom=e.target.value; render();});
+    if (dt) dt.addEventListener("change", e=>{state.filters.orders.dateTo=e.target.value; render();});
+  },
+
+  clearOrdersFilter(){
+    state.filters.orders = {search:"",status:"all",dateFrom:"",dateTo:""};
+    navigate("orders");
+  },
+
+  /* ----- Customers ----- */
+  renderCustomers(){
+    const f = state.filters.customers;
+    const map = Analytics.buildCustomers();
+    let customers = Array.from(map.values());
+
+    if (f.type === "new") customers = customers.filter(c=>!c.isRepeat);
+    else if (f.type === "repeat") customers = customers.filter(c=>c.isRepeat);
+
+    if (f.search){
+      const q = f.search.toLowerCase();
+      customers = customers.filter(c =>
+        (c.name||"").toLowerCase().includes(q) ||
+        (c.phoneNorm||"").includes(q) ||
+        (c.phoneOrig||"").includes(q)
+      );
+    }
+
+    if (f.sortBy === "orders") customers.sort((a,b)=>b.totalOrders-a.totalOrders || b.realizedSales-a.realizedSales);
+    else if (f.sortBy === "sales") customers.sort((a,b)=>b.realizedSales-a.realizedSales || b.totalOrders-a.totalOrders);
+    else if (f.sortBy === "recent") customers.sort((a,b)=>new Date(b.lastOrder.orderTime)-new Date(a.lastOrder.orderTime));
+    else if (f.sortBy === "avg") customers.sort((a,b)=>b.avgCompleted-a.avgCompleted);
+
+    const invalidCount = state.orders.filter(o=>!Utils.normalizePhone(o.phone)).length;
+    const newCount = Array.from(map.values()).filter(c=>!c.isRepeat).length;
+    const repeatCount = Array.from(map.values()).filter(c=>c.isRepeat).length;
+    const totalCustomers = map.size;
+    const repeatRatio = totalCustomers>0 ? Math.round(repeatCount/totalCustomers*100) : 0;
+
+    const topByOrders = Array.from(map.values()).sort((a,b)=>b.totalOrders-a.totalOrders || b.realizedSales-a.realizedSales).slice(0,10);
+    const topBySales = Array.from(map.values()).sort((a,b)=>b.realizedSales-a.realizedSales || b.totalOrders-a.totalOrders).slice(0,10);
+
+    return `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon icon-blue"><i class="fas fa-users"></i></div>
+          <div class="stat-card-label">إجمالي العملاء</div>
+          <div class="stat-card-value">${totalCustomers}</div>
+          <div class="stat-card-trend">بأرقام هواتف صالحة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-green"><i class="fas fa-user-check"></i></div>
+          <div class="stat-card-label">عملاء متكررون</div>
+          <div class="stat-card-value">${repeatCount}</div>
+          <div class="stat-card-trend">${repeatRatio}% من الإجمالي</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-orange"><i class="fas fa-user-plus"></i></div>
+          <div class="stat-card-label">عملاء جدد</div>
+          <div class="stat-card-value">${newCount}</div>
+          <div class="stat-card-trend">طلب واحد فقط</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-purple"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="stat-card-label">طلبات برقم غير صالح</div>
+          <div class="stat-card-value">${invalidCount}</div>
+          <div class="stat-card-trend">غير مجمّعة مع عميل</div>
+        </div>
+      </div>
+
+      <p class="text-muted" style="font-size:.82rem;margin:-8px 0 16px">
+        <i class="fas fa-info-circle"></i>
+        سياسة الحساب: المبيعات المحققة = إجمالي الطلبات غير الملغاة. الطلبات الملغاة تبقى في السجل ولا تُحسب. التجميع يتم برقم الهاتف الموحد فقط.
+      </p>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-filter"></i> تصفية العملاء</div>
+          <button class="btn btn-secondary btn-sm" onclick="Views.exportCustomers()"><i class="fas fa-file-csv"></i> تصدير CSV</button>
+        </div>
+        <div class="panel-body">
+          <div class="filters">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" class="input" placeholder="بحث بالاسم أو رقم الهاتف..." id="custSearch" value="${Utils.escapeHtml(f.search)}">
+            </div>
+            <select class="select" id="custType">
+              <option value="all" ${f.type==="all"?"selected":""}>الكل</option>
+              <option value="new" ${f.type==="new"?"selected":""}>عملاء جدد</option>
+              <option value="repeat" ${f.type==="repeat"?"selected":""}>عملاء متكررون</option>
+            </select>
+            <select class="select" id="custSort">
+              <option value="orders" ${f.sortBy==="orders"?"selected":""}>الأكثر طلباً</option>
+              <option value="sales" ${f.sortBy==="sales"?"selected":""}>الأعلى مبيعات</option>
+              <option value="recent" ${f.sortBy==="recent"?"selected":""}>أحدث طلب</option>
+              <option value="avg" ${f.sortBy==="avg"?"selected":""}>أعلى متوسط</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-trophy"></i> الأكثر طلباً (أعلى 10)</div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>العميل</th><th>الهاتف</th><th>عدد الطلبات</th><th>المبيعات</th></tr></thead>
+              <tbody>
+                ${topByOrders.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
+                  topByOrders.map((c,i)=>`
+                    <tr class="clickable" onclick="openCustomerModal('${c.phoneNorm}')">
+                      <td><strong>${i+1}</strong></td>
+                      <td>${Utils.escapeHtml(c.name)}</td>
+                      <td style="direction:ltr;text-align:right">${Utils.escapeHtml(c.phoneNorm)}</td>
+                      <td><strong>${c.totalOrders}</strong></td>
+                      <td>${Utils.formatMoney(c.realizedSales)}</td>
+                    </tr>
+                  `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-medal"></i> الأعلى مبيعات (أعلى 10)</div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>العميل</th><th>الهاتف</th><th>المبيعات المحققة</th><th>عدد الطلبات</th></tr></thead>
+              <tbody>
+                ${topBySales.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
+                  topBySales.map((c,i)=>`
+                    <tr class="clickable" onclick="openCustomerModal('${c.phoneNorm}')">
+                      <td><strong>${i+1}</strong></td>
+                      <td>${Utils.escapeHtml(c.name)}</td>
+                      <td style="direction:ltr;text-align:right">${Utils.escapeHtml(c.phoneNorm)}</td>
+                      <td><strong>${Utils.formatMoney(c.realizedSales)}</strong></td>
+                      <td>${c.totalOrders}</td>
+                    </tr>
+                  `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-list"></i> جميع العملاء <span class="badge badge-info">${customers.length}</span></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>الطلبات</th>
+                <th>المكتملة</th>
+                <th>الملغاة</th>
+                <th>المبيعات</th>
+                <th>المتوسط</th>
+                <th>أول طلب</th>
+                <th>آخر طلب</th>
+                <th>منذ</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${customers.length===0 ? `<tr><td colspan="10" class="text-center text-muted" style="padding:40px">لا يوجد عملاء مطابقون</td></tr>` :
+                customers.map(c=>`
+                  <tr class="clickable" onclick="openCustomerModal('${c.phoneNorm}')">
+                    <td>${Utils.escapeHtml(c.name)} ${c.isRepeat?'<span class="badge badge-success" style="margin-right:4px">متكرر</span>':'<span class="badge badge-info" style="margin-right:4px">جديد</span>'}</td>
+                    <td style="direction:ltr;text-align:right">${Utils.escapeHtml(c.phoneNorm)}</td>
+                    <td>${c.totalOrders}</td>
+                    <td class="text-success">${c.deliveredOrders}</td>
+                    <td class="text-danger">${c.cancelledOrders}</td>
+                    <td>${Utils.formatMoney(c.realizedSales)}</td>
+                    <td>${Utils.formatMoney(c.avgCompleted)}</td>
+                    <td>${Utils.formatDateOnly(c.firstOrder.orderTime)}</td>
+                    <td>${Utils.formatDateOnly(c.lastOrder.orderTime)}</td>
+                    <td>${c.daysSinceLastOrder} يوم</td>
+                  </tr>
+                `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  },
+
+  attachCustomersEvents(){
+    const bind = (id, key) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener(el.tagName==="INPUT"?"input":"change", e=>{
+        state.filters.customers[key] = e.target.value;
+        navigate("customers", true);
+      });
+    };
+    bind("custSearch","search"); bind("custType","type"); bind("custSort","sortBy");
+  },
+
+  exportCustomers(){
+    const rows = [["الاسم","رقم الهاتف","عدد الطلبات","المكتملة","الملغاة","المبيعات المحققة","متوسط الطلب","أول طلب","آخر طلب","أيام منذ آخر طلب"]];
+    for (const c of state.customers.values()){
+      rows.push([
+        c.name, c.phoneNorm, c.totalOrders, c.deliveredOrders, c.cancelledOrders,
+        c.realizedSales, c.avgCompleted.toFixed(2),
+        Utils.formatDateOnly(c.firstOrder.orderTime),
+        Utils.formatDateOnly(c.lastOrder.orderTime),
+        c.daysSinceLastOrder
+      ]);
+    }
+    Utils.downloadCSV(rows, `عملاء_السلطان_${new Date().toISOString().split("T")[0]}.csv`);
+    UI.toast("تم تصدير ملف العملاء بنجاح", "success");
+  },
+
+  /* ----- Products ----- */
+  renderProducts(){
+    const s = Analytics.orderStats();
+    const search = state.filters.products.search.toLowerCase();
+    const products = Array.from(s.productCount.entries())
+      .map(([name, data])=>({name, ...data}))
+      .filter(p => !search || p.name.toLowerCase().includes(search))
+      .sort((a,b)=>b.qty-a.qty);
+
+    return `
+      <div class="panel">
+        <div class="panel-body">
+          <div class="flex-between" style="flex-wrap:wrap;gap:12px">
+            <div>
+              <h3 style="margin-bottom:4px"><i class="fas fa-utensils text-accent"></i> المنتجات</h3>
+              <p class="text-muted" style="font-size:.85rem">
+                البيانات دي محسوبة من الطلبات الفعلية المسجلة في الشيت.
+              </p>
+            </div>
+            <div class="search-box" style="max-width:320px">
+              <i class="fas fa-search"></i>
+              <input type="text" class="input" placeholder="بحث عن منتج..." id="prodSearch" value="${Utils.escapeHtml(state.filters.products.search)}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم المنتج</th>
+                <th>الكمية المباعة</th>
+                <th>إجمالي القيمة</th>
+                <th>النسبة</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${products.length===0 ? `<tr><td colspan="5" class="text-center text-muted" style="padding:40px">لا توجد منتجات مباعة بعد</td></tr>` :
+                products.map((p,i)=>{
+                  const totalQty = products.reduce((s,x)=>s+x.qty,0) || 1;
+                  const pct = (p.qty/totalQty*100).toFixed(1);
+                  return `
+                    <tr>
+                      <td>${i+1}</td>
+                      <td><strong>${Utils.escapeHtml(p.name)}</strong></td>
+                      <td>${p.qty}</td>
+                      <td>${Utils.formatMoney(p.total)}</td>
+                      <td>
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <div style="flex:1;height:6px;background:var(--bg-3);border-radius:3px;overflow:hidden">
+                            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--secondary))"></div>
+                          </div>
+                          <span class="text-muted" style="font-size:.82rem;min-width:40px">${pct}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  },
+
+  attachProductsEvents(){
+    const el = document.getElementById("prodSearch");
+    if (el) el.addEventListener("input", e=>{
+      state.filters.products.search = e.target.value;
+      navigate("products", true);
+    });
+  },
+
+  /* ----- Reports ----- */
+  renderReports(){
+    const f = state.filters.reports;
+    const filtered = state.orders.filter(o => Utils.isInDateRange(o.orderTime, f.dateFrom, f.dateTo));
+
+    const totalOrders = filtered.length;
+    const cancelled = filtered.filter(o=>o.status==="ملغي").length;
+    const delivered = filtered.filter(o=>o.status==="تم التسليم").length;
+    const activeOrders = filtered.filter(o=>o.status!=="ملغي");
+    const realized = activeOrders.reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
+    const totalValue = filtered.reduce((s,o)=>s+(Number(o.finalTotal)||0),0);
+    const avgOrder = activeOrders.length>0 ? realized/activeOrders.length : 0;
+
+    const prodMap = new Map();
+    for (const o of filtered){
+      if (o.status==="ملغي") continue;
+      for (const p of Utils.parseProducts(o.productsText)){
+        const cur = prodMap.get(p.name)||{qty:0,total:0};
+        cur.qty+=p.qty; cur.total+=p.total;
+        prodMap.set(p.name,cur);
+      }
+    }
+    const topProducts = Array.from(prodMap.entries()).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10);
+
+    const custMap = new Map();
+    for (const o of filtered){
+      if (o.status==="ملغي") continue;
+      const norm = Utils.normalizePhone(o.phone);
+      if (!norm) continue;
+      const cur = custMap.get(norm)||{name:o.fullName,orders:0,sales:0};
+      cur.orders++; cur.sales += Number(o.finalTotal)||0;
+      if (o.fullName) cur.name = o.fullName;
+      custMap.set(norm,cur);
+    }
+    const topCustomers = Array.from(custMap.entries())
+      .sort((a,b)=>b[1].sales-a[1].sales).slice(0,10);
+
+    const periodLabel = f.dateFrom && f.dateTo
+      ? `من ${Utils.formatDateOnly(f.dateFrom)} إلى ${Utils.formatDateOnly(f.dateTo)}`
+      : f.dateFrom ? `من ${Utils.formatDateOnly(f.dateFrom)}`
+      : f.dateTo ? `حتى ${Utils.formatDateOnly(f.dateTo)}`
+      : "كل الفترات";
+
+    return `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-calendar-alt"></i> نطاق التقرير</div>
+          <button class="btn btn-secondary btn-sm" onclick="Views.exportReport()"><i class="fas fa-file-csv"></i> تصدير التقرير</button>
+        </div>
+        <div class="panel-body">
+          <div class="filters">
+            <div>
+              <label class="form-label" style="font-size:.78rem">من تاريخ</label>
+              <input type="date" class="input" id="repDateFrom" value="${f.dateFrom}" style="width:180px">
+            </div>
+            <div>
+              <label class="form-label" style="font-size:.78rem">إلى تاريخ</label>
+              <input type="date" class="input" id="repDateTo" value="${f.dateTo}" style="width:180px">
+            </div>
+            <div style="align-self:flex-end">
+              <button class="btn btn-secondary btn-sm" onclick="Views.quickPeriod(7)">آخر 7 أيام</button>
+              <button class="btn btn-secondary btn-sm" onclick="Views.quickPeriod(30)">آخر 30 يوم</button>
+              <button class="btn btn-secondary btn-sm" onclick="Views.quickPeriod(0)">الكل</button>
+            </div>
+          </div>
+          <p class="text-muted mt-1" style="font-size:.85rem"><i class="fas fa-info-circle"></i> الفترة الحالية: <strong>${periodLabel}</strong> — المبيعات المحققة = الطلبات غير الملغاة داخل الفترة.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon icon-blue"><i class="fas fa-shopping-bag"></i></div>
+          <div class="stat-card-label">إجمالي الطلبات</div>
+          <div class="stat-card-value">${totalOrders}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-green"><i class="fas fa-check-double"></i></div>
+          <div class="stat-card-label">طلبات مكتملة</div>
+          <div class="stat-card-value">${delivered}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-red"><i class="fas fa-times-circle"></i></div>
+          <div class="stat-card-label">طلبات ملغاة</div>
+          <div class="stat-card-value">${cancelled}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon icon-purple"><i class="fas fa-coins"></i></div>
+          <div class="stat-card-label">المبيعات المحققة</div>
+          <div class="stat-card-value">${Utils.formatMoney(realized)}</div>
+          <div class="stat-card-trend">متوسط: ${Utils.formatMoney(avgOrder)}</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-fire"></i> أعلى المنتجات مبيعاً</div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>المنتج</th><th>الكمية</th><th>القيمة</th></tr></thead>
+              <tbody>
+                ${topProducts.length===0 ? `<tr><td colspan="4" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
+                  topProducts.map(([name,d],i)=>`
+                    <tr><td>${i+1}</td><td>${Utils.escapeHtml(name)}</td><td>${d.qty}</td><td>${Utils.formatMoney(d.total)}</td></tr>
+                  `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-medal"></i> أعلى العملاء مبيعات</div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>العميل</th><th>الطلبات</th><th>المبيعات</th></tr></thead>
+              <tbody>
+                ${topCustomers.length===0 ? `<tr><td colspan="4" class="text-center text-muted" style="padding:30px">لا توجد بيانات</td></tr>` :
+                  topCustomers.map(([phone,d],i)=>`
+                    <tr class="clickable" onclick="openCustomerModal('${phone}')">
+                      <td>${i+1}</td>
+                      <td>${Utils.escapeHtml(d.name)}<br><small class="text-muted" style="direction:ltr;display:inline-block">${Utils.escapeHtml(phone)}</small></td>
+                      <td>${d.orders}</td>
+                      <td>${Utils.formatMoney(d.sales)}</td>
+                    </tr>
+                  `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  attachReportsEvents(){
+    const f = document.getElementById("repDateFrom");
+    const t = document.getElementById("repDateTo");
+    const render = () => navigate("reports", true);
+    if (f) f.addEventListener("change", e=>{state.filters.reports.dateFrom=e.target.value; render();});
+    if (t) t.addEventListener("change", e=>{state.filters.reports.dateTo=e.target.value; render();});
+  },
+
+  quickPeriod(days){
+    if (days === 0){
+      state.filters.reports.dateFrom = "";
+      state.filters.reports.dateTo = "";
+    } else {
+      const to = new Date();
+      const from = new Date(); from.setDate(from.getDate()-days+1);
+      state.filters.reports.dateFrom = from.toISOString().split("T")[0];
+      state.filters.reports.dateTo = to.toISOString().split("T")[0];
+    }
+    navigate("reports");
+  },
+
+  exportReport(){
+    const f = state.filters.reports;
+    const filtered = state.orders.filter(o => Utils.isInDateRange(o.orderTime, f.dateFrom, f.dateTo));
+    const rows = [["رقم الطلب","التاريخ","العميل","الهاتف","الإجمالي","الحالة","طريقة الدفع","المنتجات"]];
+    for (const o of filtered){
+      rows.push([
+        o.orderNumber, Utils.formatDate(o.orderTime), o.fullName,
+        Utils.normalizePhone(o.phone) || o.phone,
+        o.finalTotal, o.status, o.paymentMethod,
+        (o.productsText||"").replace(/\n/g," | ")
+      ]);
+    }
+    Utils.downloadCSV(rows, `تقرير_السلطان_${new Date().toISOString().split("T")[0]}.csv`);
+    UI.toast("تم تصدير التقرير بنجاح", "success");
+  },
+
+  /* ----- Settings ----- */
+  renderSettings(){
+    return `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-crown"></i> بيانات المطعم</div>
+        </div>
+        <div class="panel-body">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">الاسم</div><div class="detail-value">كريب السلطان</div></div>
+            <div class="detail-item"><div class="detail-label">الموقع</div><div class="detail-value">الشرقية / مركز أبو حماد / كفر عياد</div></div>
+            <div class="detail-item"><div class="detail-label">الهاتف 1</div><div class="detail-value" style="direction:ltr">01008136174</div></div>
+            <div class="detail-item"><div class="detail-label">الهاتف 2</div><div class="detail-value" style="direction:ltr">01204857565</div></div>
+            <div class="detail-item"><div class="detail-label">فودافون كاش</div><div class="detail-value" style="direction:ltr">01031198587</div></div>
+            <div class="detail-item"><div class="detail-label">العملة</div><div class="detail-value">جنيه مصري (ج.م)</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-clock"></i> مواعيد العمل</div>
+        </div>
+        <div class="panel-body">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">أيام العمل</div><div class="detail-value">كل الأيام ما عدا الأحد</div></div>
+            <div class="detail-item"><div class="detail-label">ساعات العمل</div><div class="detail-value">3:00 مساءً حتى 3:00 صباحاً</div></div>
+            <div class="detail-item"><div class="detail-label">يوم الإجازة</div><div class="detail-value">الأحد</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-gift"></i> العروض والخصومات</div>
+        </div>
+        <div class="panel-body">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">عرض الاثنين</div><div class="detail-value">خصم 10% على الطلبات فوق 100 ج.م</div></div>
+            <div class="detail-item"><div class="detail-label">كود الخصم</div><div class="detail-value">5555</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-shield-alt"></i> الأمان والاتصال</div>
+        </div>
+        <div class="panel-body">
+          <p class="text-muted mb-2" style="font-size:.88rem">
+            رمز الوصول محفوظ في هذا المتصفح فقط، ويُتحقق منه في الخادم عند كل عملية.
+          </p>
+          <div class="flex gap-1" style="flex-wrap:wrap">
+            <button class="btn btn-secondary" onclick="changeAccessKey()"><i class="fas fa-key"></i> تغيير رمز الوصول</button>
+            <button class="btn btn-secondary" onclick="clearCache()"><i class="fas fa-broom"></i> مسح الذاكرة المؤقتة</button>
+            <button class="btn btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fas fa-info-circle"></i> حول النظام</div>
+        </div>
+        <div class="panel-body">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">إصدار الـ Dashboard</div><div class="detail-value">1.1.0</div></div>
+            <div class="detail-item"><div class="detail-label">مصدر البيانات</div><div class="detail-value">Google Sheets (الطلبات)</div></div>
+            <div class="detail-item"><div class="detail-label">حالة الاتصال</div><div class="detail-value text-success">${state.lastFetch?'متصل':'غير متصل'}</div></div>
+            <div class="detail-item"><div class="detail-label">إجمالي الطلبات المحملة</div><div class="detail-value">${state.orders.length}</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/* ==========================================================================
+   Order Modal
+   ========================================================================== */
+function openOrderModal(rowIndex){
+  const o = state.orders.find(x=>x.rowIndex===rowIndex);
+  if (!o) return;
+  const products = Utils.parseProducts(o.productsText);
+  const wa = Utils.whatsappLink(o.phone);
+  const tel = Utils.telLink(o.phone);
+  const displayPhone = Utils.normalizePhone(o.phone) || o.phone || "-";
+
+  document.getElementById("orderModalBody").innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">رقم الطلب</div><div class="detail-value"><code class="inline">${Utils.escapeHtml(o.orderNumber||"-")}</code></div></div>
+      <div class="detail-item"><div class="detail-label">التاريخ والوقت</div><div class="detail-value">${Utils.formatDate(o.orderTime)}</div></div>
+      <div class="detail-item"><div class="detail-label">العميل</div><div class="detail-value">${Utils.escapeHtml(o.fullName||"-")}</div></div>
+      <div class="detail-item">
+        <div class="detail-label">الهاتف</div>
+        <div class="detail-value" style="direction:ltr;text-align:right">
+          ${Utils.escapeHtml(displayPhone)}
+          <div class="flex gap-1 mt-1">
+            ${tel?`<a href="${tel}" class="btn btn-secondary btn-sm"><i class="fas fa-phone"></i> اتصال</a>`:""}
+            ${wa?`<a href="${wa}" target="_blank" class="btn btn-success btn-sm"><i class="fab fa-whatsapp"></i> واتساب</a>`:""}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item" style="grid-column:1/-1"><div class="detail-label">العنوان</div><div class="detail-value">${Utils.escapeHtml(o.address||"-")}</div></div>
+      <div class="detail-item"><div class="detail-label">طريقة الدفع</div><div class="detail-value">${Utils.escapeHtml(o.paymentMethod||"-")}</div></div>
+      <div class="detail-item"><div class="detail-label">الحالة</div><div class="detail-value">${Utils.statusBadge(o.status)}</div></div>
+    </div>
+
+    <h4 class="section-title"><i class="fas fa-utensils"></i> المنتجات</h4>
+    <table class="data-table">
+      <thead><tr><th>المنتج</th><th>الكمية</th><th>الإجمالي</th></tr></thead>
+      <tbody>
+        ${products.length===0 ? `<tr><td colspan="3" class="text-center text-muted">لا توجد منتجات</td></tr>` :
+          products.map(p=>`<tr><td>${Utils.escapeHtml(p.name)}</td><td>${p.qty}</td><td>${Utils.formatMoney(p.total)}</td></tr>`).join("")}
+      </tbody>
+    </table>
+
+    <h4 class="section-title"><i class="fas fa-coins"></i> ملخص الأسعار</h4>
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">الإجمالي الأصلي</div><div class="detail-value">${Utils.formatMoney(o.originalTotal)}</div></div>
+      <div class="detail-item"><div class="detail-label">خصم مطبق</div><div class="detail-value">${Utils.escapeHtml(o.discountApplied)} (${Utils.formatMoney(o.discountAmount)})</div></div>
+      <div class="detail-item"><div class="detail-label">الإجمالي النهائي</div><div class="detail-value text-accent" style="font-size:1.3rem">${Utils.formatMoney(o.finalTotal)}</div></div>
+    </div>
+
+    ${o.notes ? `<h4 class="section-title"><i class="fas fa-sticky-note"></i> ملاحظات العميل</h4>
+      <div class="detail-item"><div class="detail-value">${Utils.escapeHtml(o.notes)}</div></div>` : ""}
+
+    <h4 class="section-title"><i class="fas fa-tasks"></i> تغيير الحالة</h4>
+    <div class="flex gap-1" style="flex-wrap:wrap">
+      ${CONFIG.STATUSES.map(s=>`
+        <button class="btn ${o.status===s?"btn-primary":"btn-secondary"} btn-sm" onclick="updateOrderStatusFromModal(${o.rowIndex},'${s}')">${s}</button>
+      `).join("")}
+    </div>
+  `;
+  UI.openModal("orderModal");
+}
+
+async function updateOrderStatus(rowIndex, newStatus, selectEl){
+  const o = state.orders.find(x=>x.rowIndex===rowIndex);
+  if (!o) return;
+  if (o.status === newStatus) return;
+
+  if (newStatus === "ملغي"){
+    const ok = await UI.confirm("تأكيد الإلغاء", `هل أنت متأكد من إلغاء الطلب ${o.orderNumber}؟\nسيبقى الطلب محفوظاً في السجل كملغى ولن يُحذف.`);
+    if (!ok){ if (selectEl) selectEl.value = o.status; return; }
+  }
+
+  try {
+    if (selectEl) selectEl.disabled = true;
+    await API.updateStatus(rowIndex, newStatus);
+    const order = state.orders.find(x=>x.rowIndex===rowIndex);
+    if (order) order.status = newStatus;
+    Analytics.buildCustomers();
+    UI.toast("تم تحديث الحالة بنجاح", "success");
+    if (state.currentView === "dashboard") navigate("dashboard");
+  } catch (err) {
+    UI.toast("فشل التحديث: " + err.message, "error");
+    if (selectEl) selectEl.value = o.status;
+  } finally {
+    if (selectEl) selectEl.disabled = false;
+  }
+}
+
+async function updateOrderStatusFromModal(rowIndex, newStatus){
+  await updateOrderStatus(rowIndex, newStatus, null);
+  UI.closeModal("orderModal");
+  openOrderModal(rowIndex);
+}
+
+/* ==========================================================================
+   Customer Modal
+   ========================================================================== */
+function openCustomerModal(phone){
+  const c = state.customers.get(phone);
+  if (!c){ UI.toast("العميل غير موجود","error"); return; }
+
+  const wa = Utils.whatsappLink(phone);
+  const tel = Utils.telLink(phone);
+
+  document.getElementById("customerModalBody").innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">الاسم</div><div class="detail-value">${Utils.escapeHtml(c.name)}</div></div>
+      <div class="detail-item">
+        <div class="detail-label">رقم الهاتف</div>
+        <div class="detail-value" style="direction:ltr;text-align:right">
+          ${Utils.escapeHtml(c.phoneNorm)}
+          <div class="flex gap-1 mt-1">
+            ${tel?`<a href="${tel}" class="btn btn-secondary btn-sm"><i class="fas fa-phone"></i></a>`:""}
+            ${wa?`<a href="${wa}" target="_blank" class="btn btn-success btn-sm"><i class="fab fa-whatsapp"></i></a>`:""}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item"><div class="detail-label">إجمالي الطلبات</div><div class="detail-value">${c.totalOrders}</div></div>
+      <div class="detail-item"><div class="detail-label">المكتملة / الملغاة</div><div class="detail-value"><span class="text-success">${c.deliveredOrders}</span> / <span class="text-danger">${c.cancelledOrders}</span></div></div>
+      <div class="detail-item"><div class="detail-label">المبيعات المحققة</div><div class="detail-value text-accent">${Utils.formatMoney(c.realizedSales)}</div></div>
+      <div class="detail-item"><div class="detail-label">متوسط الطلب</div><div class="detail-value">${Utils.formatMoney(c.avgCompleted)}</div></div>
+      <div class="detail-item"><div class="detail-label">أول طلب</div><div class="detail-value">${Utils.formatDateOnly(c.firstOrder.orderTime)}</div></div>
+      <div class="detail-item"><div class="detail-label">آخر طلب</div><div class="detail-value">${Utils.formatDateOnly(c.lastOrder.orderTime)} (منذ ${c.daysSinceLastOrder} يوم)</div></div>
+      <div class="detail-item"><div class="detail-label">التصنيف</div><div class="detail-value">${c.isRepeat?'<span class="badge badge-success">عميل متكرر</span>':'<span class="badge badge-info">عميل جديد</span>'}</div></div>
+      <div class="detail-item"><div class="detail-label">طريقة الدفع الشائعة</div><div class="detail-value">${Utils.escapeHtml(c.commonPayment)}</div></div>
+    </div>
+
+    ${c.favoriteProducts.length>0 ? `
+      <h4 class="section-title"><i class="fas fa-star"></i> المنتجات المفضلة</h4>
+      <table class="data-table">
+        <thead><tr><th>المنتج</th><th>الكمية</th><th>القيمة</th></tr></thead>
+        <tbody>
+          ${c.favoriteProducts.map(p=>`<tr><td>${Utils.escapeHtml(p.name)}</td><td>${p.qty}</td><td>${Utils.formatMoney(p.total)}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    ` : ""}
+
+    ${c.addresses.length>0 ? `
+      <h4 class="section-title"><i class="fas fa-map-marker-alt"></i> العناوين المستخدمة (${c.addresses.length})</h4>
+      <div class="detail-grid">
+        ${c.addresses.map(a=>`
+          <div class="detail-item">
+            <div class="detail-label">${a.count} استخدام - آخرها ${Utils.formatDateOnly(a.lastUsed)}</div>
+            <div class="detail-value">${Utils.escapeHtml(a.address)}</div>
+          </div>
+        `).join("")}
+      </div>
+    ` : ""}
+
+    <h4 class="section-title"><i class="fas fa-history"></i> السجل الزمني (${c.orders.length} طلب)</h4>
+    <div class="timeline">
+      ${c.orders.map(o=>`
+        <div class="timeline-item ${o.status==='تم التسليم'?'success':o.status==='ملغي'?'muted':''}">
+          <div class="timeline-date">${Utils.formatDate(o.orderTime)} — <code class="inline">${Utils.escapeHtml(o.orderNumber||'')}</code></div>
+          <div class="flex-between gap-1">
+            <div>
+              <div>${Utils.statusBadge(o.status)} <strong>${Utils.formatMoney(o.finalTotal)}</strong></div>
+              <div class="text-muted" style="font-size:.82rem;margin-top:4px">${Utils.escapeHtml((o.productsText||"").split("\n")[0])}</div>
+              <div class="text-muted" style="font-size:.82rem"><i class="fas fa-map-marker-alt"></i> ${Utils.escapeHtml(o.address||"-")}</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="UI.closeModal('customerModal');openOrderModal(${o.rowIndex})"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+  UI.openModal("customerModal");
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+const viewMeta = {
+  dashboard:{title:"الرئيسية",icon:"chart-line",render:Views.renderDashboard.bind(Views),after:Views.afterDashboard.bind(Views),attach:()=>{}},
+  orders:{title:"الطلبات",icon:"clipboard-list",render:Views.renderOrders.bind(Views),attach:Views.attachOrdersEvents.bind(Views)},
+  customers:{title:"العملاء",icon:"users",render:Views.renderCustomers.bind(Views),attach:Views.attachCustomersEvents.bind(Views)},
+  products:{title:"المنتجات",icon:"utensils",render:Views.renderProducts.bind(Views),attach:Views.attachProductsEvents.bind(Views)},
+  reports:{title:"التقارير المالية",icon:"file-invoice-dollar",render:Views.renderReports.bind(Views),attach:Views.attachReportsEvents.bind(Views)},
+  settings:{title:"الإعدادات",icon:"cog",render:Views.renderSettings.bind(Views),attach:()=>{}}
+};
+
+function navigate(view, keepScroll=false){
+  const meta = viewMeta[view];
+  if (!meta) return;
+  state.currentView = view;
+
+  document.querySelectorAll(".nav-item").forEach(el=>{
+    el.classList.toggle("active", el.dataset.view === view);
+  });
+
+  const titleEl = document.getElementById("pageTitle");
+  titleEl.innerHTML = `<i class="fas fa-${meta.icon}"></i> <span>${meta.title}</span>`;
+
+  const container = document.getElementById("viewsContainer");
+
+  try {
+    container.innerHTML = meta.render();
+    if (meta.attach) meta.attach();
+    if (meta.after) meta.after();
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>خطأ في العرض</h3><p>${Utils.escapeHtml(err.message)}</p></div>`;
+  }
+
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+/* ==========================================================================
+   Auth
+   ========================================================================== */
+async function tryAutoLogin(){
+  const saved = Storage.load();
+  if (saved && saved.accessKey){
+    state.accessKey = saved.accessKey;
+    const ok = await API.verify(saved.accessKey);
+    if (ok){
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("mainApp").style.display = "flex";
+      await loadOrders(true);
+      navigate("dashboard");
+      startAutoRefresh();
+      return true;
+    } else {
+      Storage.clear();
+      state.accessKey = null;
+    }
+  }
+  return false;
+}
+
+async function handleLogin(e){
+  e.preventDefault();
+  const key = document.getElementById("accessKeyInput").value.trim();
+  if (!key){ return; }
+  const btn = document.getElementById("loginBtn");
+  const err = document.getElementById("loginError");
+  err.classList.remove("show");
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loader"></div> <span>جاري التحقق...</span>';
+  try {
+    const ok = await API.verify(key);
+    if (ok){
+      state.accessKey = key;
+      Storage.save({accessKey:key});
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("mainApp").style.display = "flex";
+      await loadOrders(true);
+      navigate("dashboard");
+      startAutoRefresh();
+      UI.toast("تم الدخول بنجاح","success");
+    } else {
+      err.classList.add("show");
+      err.querySelector("span").textContent = "رمز الوصول غير صحيح";
+    }
+  } catch (e2) {
+    err.classList.add("show");
+    err.querySelector("span").textContent = "تعذّر الاتصال بالخادم: " + e2.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>دخول</span>';
+  }
+}
+
+async function logout(){
+  const ok = await UI.confirm("تسجيل الخروج","هل تريد تسجيل الخروج من لوحة التحكم؟");
+  if (!ok) return;
+  state.accessKey = null;
+  Storage.clear();
+  stopAutoRefresh();
+  location.reload();
+}
+
+function changeAccessKey(){
+  const newKey = prompt("أدخل رمز الوصول الجديد (سيتم حفظه في هذا المتصفح فقط):");
+  if (!newKey) return;
+  state.accessKey = newKey.trim();
+  Storage.save({accessKey: state.accessKey});
+  UI.toast("تم حفظ رمز الوصول الجديد","success");
+}
+
+function clearCache(){
+  state.orders = [];
+  state.customers = new Map();
+  navigate(state.currentView);
+  UI.toast("تم مسح البيانات المحلية","success");
+}
+
+function startAutoRefresh(){
+  stopAutoRefresh();
+  state.autoRefreshTimer = setInterval(async ()=>{
+    if (state.currentView !== "settings"){
+      await loadOrders(true);
+      navigate(state.currentView, true);
+    }
+  }, CONFIG.AUTO_REFRESH_MS);
+}
+function stopAutoRefresh(){
+  if (state.autoRefreshTimer){ clearInterval(state.autoRefreshTimer); state.autoRefreshTimer=null; }
+}
+
+/* ==========================================================================
+   Init
+   ========================================================================== */
+document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("loginForm").addEventListener("submit", handleLogin);
+  document.getElementById("logoutBtn").addEventListener("click", logout);
+  document.getElementById("refreshBtn").addEventListener("click", async ()=>{
+    UI.toast("جاري التحديث...","info");
+    await loadOrders(false);
+    navigate(state.currentView);
+    UI.toast("تم التحديث","success");
+  });
+  document.getElementById("mobileMenuBtn").addEventListener("click", ()=>{
+    document.getElementById("sidebar").classList.toggle("open");
+  });
+  document.querySelectorAll(".nav-item[data-view]").forEach(btn=>{
+    btn.addEventListener("click", ()=> navigate(btn.dataset.view));
+  });
+  document.querySelectorAll(".modal-overlay").forEach(m=>{
+    m.addEventListener("click", e=>{ if (e.target===m) m.classList.remove("show"); });
+  });
+
+  const loggedIn = await tryAutoLogin();
+  if (!loggedIn){
+    document.getElementById("accessKeyInput").focus();
+  }
+
+  setInterval(()=>UI.updateLastUpdate(), 5000);
+});
+
+document.addEventListener("keydown", e=>{
+  if (e.key==="Escape"){
+    document.querySelectorAll(".modal-overlay.show").forEach(m=>m.classList.remove("show"));
+    document.body.style.overflow = "";
+  }
+});
+</script>
+</body>
+</html>
